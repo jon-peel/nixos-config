@@ -142,8 +142,9 @@
 
 
     ;; Enable Company for auto-completion
-    (require 'company)
-    (add-hook 'after-init-hook 'global-company-mode)
+    ;; TODO: put company back
+    ;; (use-package company)
+    ;; (add-hook 'after-init-hook 'global-company-mode)
 
 ;; Enable Projectile for project management
 (use-package projectile

@@ -27,5 +27,15 @@
       
       # Add more hosts as needed
     };
+
+
+homeConfigurations = {
+    "me@tuffy" = home-manager.lib.homeManagerConfiguration {
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      extraSpecialArgs = { inherit inputs; };
+      modules = [ ./home/me ];
+    };
+  };
+
   };
 }
