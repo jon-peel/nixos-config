@@ -4,7 +4,9 @@
     enable = true;
     package = pkgs.emacs;  # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
 	  extraPackages = epkgs: [
-      epkgs.counsel-projectile
+	  epkgs.cask
+        pkgs.shellcheck
+	        epkgs.counsel-projectile
       epkgs.doom-modeline
       epkgs.doom-themes
   	  epkgs.nix-mode
@@ -25,6 +27,7 @@
       epkgs.company # Auto-completion
       epkgs.projectile # Project management
     epkgs.rainbow-delimiters # Colorful brackets
+
 epkgs.visual-fill-column
     ];
   };
