@@ -188,7 +188,7 @@
 
 ;; Reload nix home manager
 (defun my/run-home-manager-switch ()
-  "Run 'home-manager switch' and reload the Emacs configuration."
+  "Run 'home-manager switch --flake /home/me/nixos-config/#me@tuffy' and reload the Emacs configuration."
   (interactive)
   (async-shell-command "home-manager switch")
   (sleep-for 2))
@@ -197,7 +197,7 @@
   "n"   '(:ignore t :which-key "nix")
   "nh"  '(:prefix t :which-key "home manager")
   "nhs" '(my/run-home-manager-switch :which-key "switch")
-  "nhe" '( (lambda()(interactive)(find-file-existing "~/.config/home-manager/home.nix")) :which-key "edit")
+  "nhe" '( (lambda()(interactive)(find-file-existing "~/nixos-config/home/me/default.nix")) :which-key "edit")
   )
 
 

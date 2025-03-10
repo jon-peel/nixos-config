@@ -30,8 +30,11 @@
     liberation_ttf
     fira-code
     fira-code-symbols
-    fira-code
-    #emacs-all-the-icons-fonts
+
+  emacs-all-the-icons-fonts
+    font-awesome
+    nerd-fonts.fira-code
+    nerd-fonts.jetbrains-mono
 
     # Coding
     gitAndTools.gh
@@ -195,7 +198,7 @@ org
 	  epkgs.use-package
 	  epkgs.cask
 	        epkgs.counsel-projectile
-      epkgs.doom-modeline
+    epkgs.doom-modeline
       epkgs.doom-themes
   	  epkgs.nix-mode
       epkgs.forge
@@ -220,5 +223,6 @@ epkgs.visual-fill-column
     ];
   };
 
+  home.file.".emacs.d/.keep".text = "";
   home.file.".emacs.d/init.el".source = ./init.el;
 }

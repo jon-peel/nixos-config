@@ -18,6 +18,16 @@
   boot.loader.grub.device = "nodev";
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.useOSProber = true;
+  boot.loader.grub.theme = pkgs.nixos-grub2-theme;
+  boot = {
+    plymouth = {
+      enable = true;
+      theme = "breeze";
+      # Available themes: bgrt, breeze, charge, fade-in, glow, script, solar, spinfinity, spinner
+    };
+    # Make sure kernel supports splash
+    kernelParams = [ "quiet" "splash" "rd.systemd.show_status=false" "rd.udev.log_level=3" "vt.global_cursor_default=0" ];
+  };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];  
 
@@ -159,6 +169,8 @@ virtualisation = {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+
+  
 gnomeExtensions.appindicator
     distrobox
     home-manager
