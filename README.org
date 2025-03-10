@@ -1,0 +1,103 @@
+* NixOS and Home-Manager Configuration
+
+This repository contains my personal NixOS system configurations and Home-Manager user configurations.
+
+** Repository Structure
+
+#+BEGIN_EXAMPLE
+.
+├── flake.nix            # Main entry point and configuration
+├── hosts/               # System configurations for different machines
+│   ├── desktop/
+│   │   ├── default.nix  # Desktop-specific system config
+│   │   └── hardware-configuration.nix
+│   └── laptop/
+│       ├── default.nix  # Laptop-specific system config
+│       └── hardware-configuration.nix
+├── modules/             # Shared NixOS modules
+│   └── ...
+├── home/                # Home-manager configurations
+│   ├── common/          # Shared home configs
+│   │   ├── default.nix
+│   │   └── ...
+│   └── username/        # User-specific home configs
+│       └── default.nix
+└── README.md
+#+END_EXAMPLE
+
+** Prerequisites
+
+- NixOS installed on your system
+- Git
+- Flakes enabled (add `experimental-features = nix-command flakes` to your nix config)
+
+** Installation
+
+1. Clone this repository:
+   #+BEGIN_SRC bash
+   git clone https://github.com/yourusername/nixos-config.git
+   cd nixos-config
+   #+END_SRC
+
+2. Update ~flake.nix~ with your hostname and username
+
+3. Apply the configuration:
+   #+BEGIN_SRC bash
+   sudo nixos-rebuild switch --flake .#hostname
+   #+END_SRC
+
+** Adding a New Machine
+
+1. Create a new directory under `hosts/`:
+   #+BEGIN_SRC bash
+   mkdir -p hosts/newmachine
+   #+END_SRC
+
+2. Copy your hardware configuration:
+   #+BEGIN_SRC bash
+   cp /etc/nixos/hardware-configuration.nix hosts/newmachine/
+   #+END_SRC
+
+3. Create `hosts/newmachine/default.nix` with your system configuration
+
+4. Add the new machine to `flake.nix` under `nixosConfigurations`
+
+** Updating
+
+1. Pull the latest changes:
+   #+BEGIN_SRC bash
+   git pull
+    #+END_SRC 
+
+2. Apply the configuration:
+   #+BEGIN_SRC bash
+   sudo nixos-rebuild switch --flake .#hostname
+   #+END_SRC 
+
+** Home-Manager Configuration
+
+Home-Manager is integrated as a NixOS module. Your user configurations are in the `home/` directory.
+
+To update only your Home-Manager configuration:
+
+#+BEGIN_SRC bash
+nixos-rebuild switch --flake .#hostname
+#+END_SRC 
+
+** Best Practices
+
+- Keep system-specific configurations in the respective `hosts/` directory
+- Share common configurations using the `modules/` directory
+- For sensitive data, use `sops-nix` or store in a separate private repository
+- Commit your `flake.lock` file to ensure reproducible builds
+- Document changes with meaningful commit messages
+
+** Troubleshooting
+
+- *Configuration not applying*: Make sure your hostname in `flake.nix` matches your system's hostname
+- *Flake errors*: Update your inputs with `nix flake update`
+- *Home-Manager errors*: Check your user configuration in `home/username/default.nix`
+
+** License
+
+This is personal configuration. Feel free to use it as inspiration for your own setup.
