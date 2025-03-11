@@ -8,8 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./gnome.nix
-     # ./wireguard.nix
+      # ./gnome.nix
+      ./plasma.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
