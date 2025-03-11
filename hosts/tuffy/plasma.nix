@@ -4,11 +4,18 @@
   services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
 
-  
+ # environment.systemPackages = with pkgs; [
+    # KDE applications
+ #   kate
+ #   konsole
+ #   dolphin
+ #   ark
+ #   okular
+ #   # ... add other KDE applications you want
+ # ];
 
   # Optional: Enable Wayland support for Plasma
   services.xserver.displayManager.defaultSession = "plasmawayland";
   
-  # Optional: Add Qt theme integration for non-KDE applications
-  programs.qt5ct.enable = true;
+  qt5.platformTheme = "qt5ct";
 }
