@@ -73,6 +73,7 @@
   home.file = {
     ".config/onedrive/sync_list".text = ''
 org
+Mongo-export
     '';
 
 
@@ -123,6 +124,8 @@ org
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  programs.kitty.enable = true;
 
   programs.git = {
 	enable = true;
@@ -227,4 +230,9 @@ epkgs.visual-fill-column
 
   home.file.".emacs.d/.keep".text = "";
   home.file.".emacs.d/init.el".source = ./init.el;
+
+
+
+
+  
 }

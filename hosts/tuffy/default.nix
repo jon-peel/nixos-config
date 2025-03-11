@@ -8,8 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # ./gnome.nix
-      ./windowmaker.nix
+      ./gnome.nix
+      # ./windowmaker.nix
       # ./plasma.nix
     ];
 
@@ -54,6 +54,8 @@
   # };
 
 
+  xdg.portal.enable = true;
+  xdg.portal.wlr.enable = true;
   services.flatpak.enable = true;
   systemd.services.flatpak-repo = {
     wantedBy = [ "multi-user.target" ];
@@ -166,6 +168,16 @@ home-manager = {
     wget
   ];
 
+
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  };
+
+  
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;

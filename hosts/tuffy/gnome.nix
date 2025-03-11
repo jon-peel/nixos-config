@@ -4,7 +4,9 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
-#  programs.gnomeExtensions.appindicator.enable = true;
+  environment.systemPackages = with pkgs; [
+    gnomeExtensions.appindicator
+  ];
   
   environment.gnome.excludePackages = (with pkgs; [
     atomix # puzzle game
