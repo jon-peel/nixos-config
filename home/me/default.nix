@@ -40,6 +40,7 @@
     gitAndTools.gh
 
     # other
+    curl
     gnome-software
     veracrypt
     thefuck # that corrects errors in previous console commands.
@@ -209,7 +210,8 @@ org
       epkgs.evil-collection
       # epkgs.evil-magit
       epkgs.magit # Git integration
-      epkgs.org-bullets
+    epkgs.org-bullets
+      # epkgs.org-habit
       epkgs.which-key # Keybinding suggestions
       epkgs.ivy # Fuzzy completion
       epkgs.ivy-rich

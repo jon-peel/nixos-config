@@ -18,8 +18,10 @@
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
+
+
 ;; Initialize package sources
-(require 'package)
+; (require 'package)
 
 ;(setq package-archives '(("melpa" . "https://melpa.org/packages/")
 ;                         ("org" . "https://orgmode.org/elpa/")
@@ -228,11 +230,95 @@
 (defun my/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
-  (visual-line-mode 1))
+  (visual-line-mode 1)
+
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  
+
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
+
+  (setq org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")
+      ))
+
+  (setq org-refile-targets
+    '(("archive.org" :maxlevel . 2)
+      ("tasks.org" :maxlevel . 1)))
+
+  ;; Save Org buffers after refiling!
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+
+  ;; Configure custom agenda views
+  (setq org-agenda-custom-commands
+   '(("d" "Dashboard"
+     ((agenda "" ((org-deadline-warning-days 7)))
+      (todo "NEXT"
+        ((org-agenda-overriding-header "Next Tasks")))
+      (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+    ("n" "Next Tasks"
+     ((todo "NEXT"
+        ((org-agenda-overriding-header "Next Tasks")))))
+
+    ("W" "Work Tasks" tags-todo "+work-hold")
+
+    ;; Low-effort next actions
+    ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+     ((org-agenda-overriding-header "Low Effort Tasks")
+      (org-agenda-max-todos 20)
+      (org-agenda-files org-agenda-files)))
+
+    ("w" "Workflow Status"
+     ((todo "WAIT"
+            ((org-agenda-overriding-header "Waiting on External")
+             (org-agenda-files org-agenda-files)))
+      (todo "REVIEW"
+            ((org-agenda-overriding-header "In Review")
+             (org-agenda-files org-agenda-files)))
+      (todo "PLAN"
+            ((org-agenda-overriding-header "In Planning")
+             (org-agenda-todo-list-sublevels nil)
+             (org-agenda-files org-agenda-files)))
+      (todo "BACKLOG"
+            ((org-agenda-overriding-header "Project Backlog")
+             (org-agenda-todo-list-sublevels nil)
+             (org-agenda-files org-agenda-files)))
+      (todo "READY"
+            ((org-agenda-overriding-header "Ready for Work")
+             (org-agenda-files org-agenda-files)))
+      (todo "ACTIVE"
+            ((org-agenda-overriding-header "Active Projects")
+             (org-agenda-files org-agenda-files)))
+      (todo "COMPLETED"
+            ((org-agenda-overriding-header "Completed Projects")
+             (org-agenda-files org-agenda-files)))
+      (todo "CANC"
+            ((org-agenda-overriding-header "Cancelled Projects")
+             (org-agenda-files org-agenda-files)))))))
+   
+  
+  )
 
 ;; Org Mode Configuration ------------------------------------------------------
-
 (setq org-directory "~/OneDrive/org/")
+(setq org-agenda-files '("~/OneDrive/org/tasks.org"
+                         "~/OneDrive/org/anniversaries.org"))
+
+
+(my/leader-keys
+  "o"   '(:ignore t :which-key "org")
+  "oa"  '(org-agenda :which-key "agenda")
+  "oc"  '(org-capture :which-key "capture")
+  "or"  '(org-refile :which-key "refile")
+  "ot"  '(counsel-org-tags :which-key "tags")
+  )
+
 
 (defun my/org-font-setup ()
   ;; Replace list hyphen with dot
@@ -295,7 +381,8 @@
         ("jj" "Journal" entry
          (file+olp+datetree "journal.org" "Journal")
          "* Entry - %<%H:%M>\n%U\n\n%?"
-         :empty-lines 1)
+         :empty-lines 1
+	 :kill-buffer t)
         ("jg" "Goals" entry
          (file+olp+datetree "journal.org" "Journal")
          "* TODO Goals - %<%d %B %Y> [/]\nSCHEDULED: %t\n** [ ] %?"

@@ -2,12 +2,13 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./gnome.nix
      # ./wireguard.nix
     ];
 
@@ -18,7 +19,7 @@
   boot.loader.grub.device = "nodev";
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.useOSProber = true;
-  boot.loader.grub.theme = pkgs.nixos-grub2-theme;
+  boot.loader.grub.theme = pkgs.minimal-grub-theme;
   boot = {
     plymouth = {
       enable = true;
@@ -66,29 +67,6 @@
   services.xserver.videoDrivers = [ "nvidia" ];
 
 
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-
-environment.gnome.excludePackages = (with pkgs; [
-  atomix # puzzle game
-  cheese # webcam tool
-  # epiphany # web browser
-  evince # document viewer
-  geary # email reader
-  gedit # text editor
-  gnome-calendar
-  gnome-characters
-  gnome-music
-  gnome-photos
-  gnome-terminal
-  gnome-tour
-  hitori # sudoku game
-  iagno # go game
-  tali # poker game
-  totem # video player
-]);
-  
 
   # Configure keymap in X11
   services.xserver.xkb.layout = "us";
@@ -145,6 +123,7 @@ virtualisation = {
 }; 
 
 
+
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -153,14 +132,21 @@ virtualisation = {
     isNormalUser = true;
     extraGroups = [ "wheel" "podman" "docker" "libvirtd" ]; 
     packages = with pkgs; [
-      emacs
       firefox
       jetbrains-toolbox
       nvtopPackages.full	
       tree
-      ventoy-full
     ];
   };
+
+home-manager = {
+  useGlobalPkgs = true;
+  useUserPackages = true;
+#  users.me = import ../../home/me#;
+#  # This is the key part:
+  backupFileExtension = "backup";
+  extraSpecialArgs = { inherit inputs; };
+};
 
   services.onedrive.enable = true;	
   programs.firefox.enable = true;
@@ -171,7 +157,6 @@ virtualisation = {
   environment.systemPackages = with pkgs; [
 
   
-gnomeExtensions.appindicator
     distrobox
     home-manager
     ripgrep
