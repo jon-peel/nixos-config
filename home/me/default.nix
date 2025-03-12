@@ -39,6 +39,7 @@
 
     # Coding
     gitAndTools.gh
+    github-cli
     dotnet-sdk_9
 
     # other
@@ -132,7 +133,7 @@ Mongo-export
 
   programs.git = {
 	enable = true;
-	userName = "JonPeel";
+	userName = "Jonathan Peel";
 	userEmail = "me@jonathanpeel.co.za";
 	aliases = {
 		pu="push"; 
@@ -156,7 +157,6 @@ Mongo-export
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    # autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
     shellAliases = {
       ll = "ls -lh";
@@ -169,13 +169,13 @@ Mongo-export
     history.size = 10000;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "docker" "sudo" "thefuck" "dirhistory" "history" ];
+      plugins = [ "git" "docker" "sudo" "thefuck" "dirhistory" "history" "vi-mode" ];
       theme = "agnoster";
-    };
+    };  
     plugins = [
       {
         name = "powerlevel10k-config";
-        src = "/home/me/nixos-config/home/me";
+        src = ./p10k;
         file = "p10k.zsh";
       }
       {
