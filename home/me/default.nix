@@ -30,20 +30,23 @@
     liberation_ttf
     fira-code
     fira-code-symbols
-
-  emacs-all-the-icons-fonts
+    emacs-all-the-icons-fonts
     font-awesome
     nerd-fonts.fira-code
     nerd-fonts.jetbrains-mono
+    powerline
+    powerline-fonts
 
     # Coding
     gitAndTools.gh
+    dotnet-sdk_9
 
     # other
     curl
     gnome-software
     veracrypt
     thefuck # that corrects errors in previous console commands.
+    zsh-powerlevel10k 
     
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
@@ -158,7 +161,7 @@ Mongo-export
     shellAliases = {
       ll = "ls -lh";
       la = "ls -lha";
-      update = "sudo nixos-rebuild switch";
+      update = "sudo nixos-rebuild switch --flake ~/nixos-config#tuffy";
     };
 	  envExtra = ''
     	 export NAME="Jonathan"
@@ -166,9 +169,21 @@ Mongo-export
     history.size = 10000;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "thefuck" ];
-      theme = "robbyrussell";
+      plugins = [ "git" "docker" "sudo" "thefuck" "dirhistory" "history" ];
+      theme = "agnoster";
     };
+    plugins = [
+      {
+        name = "powerlevel10k-config";
+        src = "/home/me/nixos-config/home/me";
+        file = "p10k.zsh";
+      }
+      {
+        name = "zsh-powerlevel10k";
+        src = "${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/";
+        file = "powerlevel10k.zsh-theme";
+      }
+    ];
   };
 
 
