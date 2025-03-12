@@ -132,22 +132,24 @@ Mongo-export
   programs.kitty.enable = true;
 
   programs.git = {
-	enable = true;
-	userName = "Jonathan Peel";
-	userEmail = "me@jonathanpeel.co.za";
-	aliases = {
-		pu="push"; 
-		co="checkout"; 
-		cm="commit";
-	};
-
+	  enable = true;
+	  userName = "Jonathan Peel";
+	  userEmail = "me@jonathanpeel.co.za";
+	  aliases = {
+		  pu="push"; 
+		  co="checkout"; 
+		  cm="commit";
+	  };
+    extraConfig = {
+      credential.helper = "store --file ~/.git-credentials";
+    };
   };
 
   gtk = {
-	enable = true;
-	theme.name = "Adwaita";
-	cursorTheme.name = "Adwaita";
-	iconTheme.name = "Adwaita";
+	  enable = true;
+	  theme.name = "Adwaita";
+	  cursorTheme.name = "Adwaita";
+	  iconTheme.name = "Adwaita";
   };
 
   xdg.mimeApps.defaultApplications = {
