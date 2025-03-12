@@ -6,6 +6,8 @@
 
   environment.systemPackages = with pkgs; [
     gnomeExtensions.appindicator
+    gdm-settings
+    ghostty
   ];
   
   environment.gnome.excludePackages = (with pkgs; [
@@ -16,7 +18,12 @@
     geary # email reader
     gedit # text editor
     gnome-calendar
+    gnome-clocks
+    gnome-calculator
+    gnome-contacts
+    gnome-maps
     gnome-characters
+    gnome-console
     gnome-music
     gnome-photos
     gnome-terminal
@@ -27,7 +34,5 @@
     tali # poker game
     totem # video player
   ]);
-
-
   
 }

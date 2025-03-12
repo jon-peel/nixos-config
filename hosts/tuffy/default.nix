@@ -8,7 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./gnome.nix
+      # ./gnome.nix
+      ./openbox.nix
       # ./windowmaker.nix
       # ./plasma.nix
     ];
@@ -73,6 +74,7 @@
 
   # Configure keymap in X11
   services.xserver.xkb.layout = "us";
+  services.xserver.xkbOptions = "ctrl:nocaps";
 
   hardware.graphics.enable = true;
   hardware.nvidia = {

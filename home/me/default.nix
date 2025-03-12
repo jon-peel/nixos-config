@@ -41,6 +41,7 @@
     gitAndTools.gh
     github-cli
     dotnet-sdk_9
+    fsautocomplete
 
     # other
     curl
