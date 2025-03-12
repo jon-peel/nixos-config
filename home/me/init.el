@@ -423,7 +423,7 @@
  ;; Automatically tangle our Emacs.org config file when we save it
  (defun efs/org-babel-tangle-config ()
    (when (string-equal (buffer-file-name)
-                       (expand-file-name "~/nixos-config/home/me/emacs.org"))
+                       (expand-file-name "~/nixos-config/home/me/init.org"))
      ;; Dynamic scoping to the rescue
      (let ((org-confirm-babel-evaluate nil))
        (org-babel-tangle))))
