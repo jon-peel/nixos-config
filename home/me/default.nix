@@ -113,9 +113,10 @@ xeyes -geometry 150x60+10+170 &
 </keybind>
 '';
 
+    
+    ".fvwm/o_config".text = ''
 
-
-    ".fvwm/config".text = ''
+Read $[HOME]/.fvwm/menu
 echo '
 # Basic FVWM configuration
 ImagePath +:$HOME/.fvwm/icons:+/usr/share/icons

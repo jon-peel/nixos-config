@@ -9,7 +9,8 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
       # ./gnome.nix
-      ./fvwm.nix
+      ./mlvwm.nix
+      # ./fvwm.nix
       # ./twm.nix
       # ./openbox.nix
       # ./windowmaker.nix
