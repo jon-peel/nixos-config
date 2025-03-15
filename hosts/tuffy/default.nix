@@ -7,9 +7,11 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      ./hardware-configuration.nix      
       # ./gnome.nix
-      ./openbox.nix
+      ./fvwm.nix
+      # ./twm.nix
+      # ./openbox.nix
       # ./windowmaker.nix
       # ./plasma.nix
     ];
@@ -76,6 +78,28 @@
   services.xserver.xkb.layout = "us";
   services.xserver.xkbOptions = "ctrl:nocaps";
 
+  # Battery charge and power limits
+  services.power-profiles-daemon.enable = false;
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      
+      CPU_MIN_PERF_ON_AC = 0;
+      CPU_MAX_PERF_ON_AC = 100;
+      CPU_MIN_PERF_ON_BAT = 0;
+      CPU_MAX_PERF_ON_BAT = 20;
+      
+      #Optional helps save long term battery health
+      START_CHARGE_THRESH_BAT0 = 40; # 40 and below it starts to charge
+      STOP_CHARGE_THRESH_BAT0 = 90; # 80 and above it stops charging
+    };
+  };
+   
   hardware.graphics.enable = true;
   hardware.nvidia = {
     modesetting.enable = true;
@@ -136,19 +160,11 @@ virtualisation = {
     description = "Jonathan Peel";
     isNormalUser = true;
     extraGroups = [ "wheel" "podman" "docker" "libvirtd" ]; 
-    packages = with pkgs; [
-      firefox
-      jetbrains-toolbox
-      nvtopPackages.full	
-      tree
-    ];
   };
 
 home-manager = {
-  useGlobalPkgs = true;
-  useUserPackages = true;
-#  users.me = import ../../home/me#;
-#  # This is the key part:
+  # useGlobalPkgs = true;
+  # useUserPackages = true;
   backupFileExtension = "backup";
   extraSpecialArgs = { inherit inputs; };
 };

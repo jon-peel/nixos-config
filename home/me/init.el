@@ -73,9 +73,10 @@
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
+  :custom ((doom-modeline-height 30)))
 
 ;; Display column number of mode line
+(set-face-attribute 'mode-line nil :height 120)
 (column-number-mode)
 
 (global-display-line-numbers-mode t)
@@ -84,7 +85,8 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
 		shell-mode-hook
-		treemacs-mode
+		treemacs-mode-hook
+		vterm-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
@@ -215,7 +217,18 @@
   (add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
         )
 
-
+(use-package nix-mode
+  :mode " \\.nix$"
+  :hook (nix-mode . lsp-deferred)
+  :config
+  (add-to-list 'auto-mode-alist '("\\.nix$" . nix-mode)))
+      
+;    (with-eval-after-load 'lsp-mode
+;      (lsp-register-client
+;        (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
+;                         :major-modes '(nix-mode)
+;                         :priority 0
+;                         :server-id 'nixd)))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -426,6 +439,66 @@
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+(use-package term
+  :config
+  (setq explicit-shell-file-name "zsh") ;; Change this to zsh, etc
+  ;;(setq explicit-zsh-args '())         ;; Use 'explicit-<shell>-args for shell-specific args
+
+  ;; Match the default Bash shell prompt.  Update this if you have a custom prompt
+  (setq term-prompt-regexp "^.*?\ \ *")
+  )
+
+(use-package vterm
+  :commands vterm
+  :config
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")  ;; Set this to match your custom shell prompt
+  ;;(setq vterm-shell "zsh")                       ;; Set this to customize the shell to launch
+  (setq vterm-max-scrollback 10000))
+
+(when (eq system-type 'windows-nt)
+  (setq explicit-shell-file-name "powershell.exe")
+  (setq explicit-powershell.exe-args '()))
+
+(defun eshell-load-zsh-aliases ()
+  "Read zsh aliases and add them to the list of eshell aliases."
+  ;; Bash needs to be run - temporarily - interactively
+  ;; in order to get the list of aliases.
+    (with-temp-buffer
+      (call-process "zsh" nil '(t nil) nil "-ci" "alias")
+      (goto-char (point-min))
+      (while (re-search-forward "alias \\(.+\\)='\\(.+\\)'$" nil t)
+        (eshell/alias (match-string 1) (match-string 2)))))
+
+(defun efs/configure-eshell ()
+  ;; Save command history when commands are entered
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+  
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+  
+  ;; Bind some useful keys for evil-mode
+
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+  (evil-normalize-keymaps)
+  
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt)
+
+(use-package eshell
+  :hook (eshell-first-time-mode . efs/configure-eshell)
+  :config
+  
+  (with-eval-after-load 'esh-opt
+    (setq eshell-destroy-buffer-when-process-dies t)
+    (setq eshell-visual-commands '("htop" "btop" "nvtop" "zsh" "vim")))
+  
+  (add-hook 'eshell-alias-load-hook 'eshell-load-zsh-aliases)
+  (eshell-git-prompt-use-theme 'powerline))
 
 (defun my/run-home-manager-switch ()
   "sudo nixos-rebuild switch --flake ~/nixos-config#tuffy"

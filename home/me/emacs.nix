@@ -36,6 +36,11 @@
       epkgs.projectile # Project management
       epkgs.rainbow-delimiters # Colorful brackets
       epkgs.visual-fill-column
+
+      # shells
+      epkgs.vterm
+      epkgs.eshell-z
+      epkgs.eshell-git-prompt
     ];
   };
   

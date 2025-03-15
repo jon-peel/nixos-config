@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -24,6 +24,11 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
+      firefox
+      jetbrains-toolbox
+      nvtopPackages.full	
+      tree
+    
     # Fonts
     noto-fonts
     noto-fonts-emoji
@@ -32,23 +37,34 @@
     fira-code-symbols
     emacs-all-the-icons-fonts
     font-awesome
+    material-design-icons
+    weather-icons
+    #nerd-fonts
     nerd-fonts.fira-code
     nerd-fonts.jetbrains-mono
     powerline
     powerline-fonts
 
-    # Coding
+      # Coding
+      nixd
     gitAndTools.gh
     github-cli
     dotnet-sdk_9
     fsautocomplete
 
-    # other
+      # other
+      htop
+      btop
     curl
     gnome-software
     veracrypt
     thefuck # that corrects errors in previous console commands.
-    zsh-powerlevel10k 
+      zsh-powerlevel10k
+      remmina
+
+    # Fun
+    xorg.xeyes
+    xorg.xclock
     
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
@@ -81,7 +97,73 @@ org
 Mongo-export
     '';
 
-   ".face".source = ./face.jpg; 
+    ".face".source = ./face.jpg;
+
+    ".config/openbox/autostart".text = ''
+mmaker -f -t OpenBox &
+xclock -background "#333333" -geometry 150x150+10+10 &
+xeyes -geometry 150x60+10+170 &
+'';
+
+    ".config/openbox/rc.xml".text = ''
+<keybind key="W-space">
+  <action name="Execute">
+    <command>rofi -show drun</command>
+  </action>
+</keybind>
+'';
+
+
+
+    ".fvwm/config".text = ''
+echo '
+# Basic FVWM configuration
+ImagePath +:$HOME/.fvwm/icons:+/usr/share/icons
+
+# Virtual Desktops
+DesktopSize 2x2
+EdgeScroll 100 100
+
+# Key bindings
+Key F1 A M Menu MenuFvwmRoot
+Key Tab A M WindowList Root c c NoDeskSort, SelectOnRelease Meta_L
+Key F2 A M Exec exec xterm
+Key F4 A M Close
+
+# Mouse bindings
+Mouse 1 R A Menu MenuFvwmRoot
+Mouse 1 T A Function "MoveOrRaise"
+Mouse 1 FS A Resize
+Mouse 2 T A Function "MoveOrRaise"
+
+# Functions
+DestroyFunc MoveOrRaise
+AddToFunc MoveOrRaise
++ I Raise
++ M Move
++ D Lower
+
+# Styles
+Style * BorderWidth 5, HandleWidth 5
+Style * Colorset 1, HilightColorset 2
+Style * MWMButtons, MWMBorder, MWMDecor
+
+# Colors
+Colorset 1 fg black, bg #c0c0c0
+Colorset 2 fg white, bg #000080
+
+# Simple menu
+DestroyMenu MenuFvwmRoot
+AddToMenu MenuFvwmRoot "Root Menu" Title
++ "XTerm" Exec exec xterm
++ "Firefox" Exec exec firefox
++ "" Nop
++ "Restart FVWM" Restart
++ "Exit FVWM" Quit
+' > ~/.fvwm/config
+'';
+    
+    
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in
     # # the Nix store. Activating the configuration will then make '~/.screenrc' a
     # # symlink to the Nix store copy.
@@ -190,17 +272,21 @@ Mongo-export
   };
 
 
-
   programs.vscode = {
     enable = true;
     profiles.default = {
       extensions = with pkgs.vscode-extensions; [
+        ms-azuretools.vscode-docker
         ms-vscode-remote.remote-containers
         ms-vscode-remote.vscode-remote-extensionpack
       ];
       userSettings = {
         "editor.fontSize" = 14;
         "files.autoSave" = "afterDelay";
+        "window.restoreWindows" = "none";
+        "window.autoDetectColorScheme" = true;
+        "workbench.preferredDarkColorTheme" = "Default Dark+";
+        "workbench.preferredLightColorTheme" = "Default Light+";
         # "dev.containers.dockerPath" = "podman";
       };
     };
