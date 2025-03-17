@@ -8,8 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
-      # ./gnome.nix
-      ./mlvwm.nix
+      ./gnome.nix
+      # ./mlvwm.nix
       # ./fvwm.nix
       # ./twm.nix
       # ./openbox.nix
@@ -32,7 +32,12 @@
       # Available themes: bgrt, breeze, charge, fade-in, glow, script, solar, spinfinity, spinner
     };
     # Make sure kernel supports splash
-    kernelParams = [ "quiet" "splash" "rd.systemd.show_status=false" "rd.udev.log_level=3" "vt.global_cursor_default=0" ];
+    kernelParams = [ "quiet" "splash" "rd.systemd.show_status=false" "rd.udev.log_level=3" "vt.global_cursor_default=0"
+                       "intel_pstate=active" # For Intel CPUs
+                       "pcie_aspm=force"
+                       "transparent_hugepage=always"
+                       "usbcore.autosuspend=1"
+                   ];
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];  
@@ -57,7 +62,23 @@
   #   useXkbConfig = true; # use xkb.options in tty.
   # };
 
+#  services.kmscon = {
+#    enable = true;
+#    fonts = [{ name = "JetBrainsMono Nerd Font"; package = pkgs.nerd-fonts.jetbrains-mono; }];
+    # extraConfig = "font-name=JetBrainsMono Nerd Font font-size=14";
+#    hwRender = true;  # Enable hardware rendering
+    # autologinSessions = [ "tty2" "tty3" "tty4" "tty5" "tty6" ];
+#    useXkbConfig = true;
+#    extraOptions = "--term xterm-256color";
+#  };
+  
 
+  
+  #Adjust screen brightness automatically
+  services.autorandr.enable = true;
+  programs.light.enable = true;
+
+  
   xdg.portal.enable = true;
   xdg.portal.wlr.enable = true;
   services.flatpak.enable = true;
@@ -93,7 +114,7 @@
       CPU_MIN_PERF_ON_AC = 0;
       CPU_MAX_PERF_ON_AC = 100;
       CPU_MIN_PERF_ON_BAT = 0;
-      CPU_MAX_PERF_ON_BAT = 20;
+      CPU_MAX_PERF_ON_BAT = 60;
       
       #Optional helps save long term battery health
       START_CHARGE_THRESH_BAT0 = 40; # 40 and below it starts to charge
@@ -177,7 +198,7 @@ home-manager = {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-
+    nerd-fonts.jetbrains-mono 
   
     distrobox
     home-manager

@@ -7,55 +7,59 @@
 To tangle ~./emacs.nix~ use <kbd>C-c C-v T</kbd>.
 
 #+begin_src nix :tangle ./emacs.nix
-  { config, pkgs, ... }: {
-    programs.emacs = {
-      enable = true;
-      package = pkgs.emacs;  # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
-    	extraPackages = epkgs: [
-    	  epkgs.use-package
-    	  epkgs.cask
-    	  epkgs.counsel-projectile
-        epkgs.doom-modeline
-        epkgs.doom-themes
-    	  epkgs.nix-mode
-        epkgs.forge
-        epkgs.fsharp-mode
-        epkgs.general
-        epkgs.helpful
-        epkgs.hydra
-        epkgs.evil # Vim keybindings
-        epkgs.evil-collection
-        epkgs.evil-nerd-commenter
-        # epkgs.evil-magit
-        epkgs.lsp-mode
-        epkgs.lsp-ui
-        epkgs.lsp-treemacs
-        epkgs.lsp-ivy
-        epkgs.magit # Git integration
-        epkgs.org-bullets
-        # epkgs.org-habit
-        epkgs.which-key # Keybinding suggestions
-        epkgs.ivy # Fuzzy completion
-        epkgs.ivy-rich
-        epkgs.counsel # Ivy-based commands
-        epkgs.swiper # Fuzzy search
-        epkgs.typescript-mode
-        epkgs.company # Auto-completion
-        epkgs.company-box
-        epkgs.projectile # Project management
-        epkgs.rainbow-delimiters # Colorful brackets
-        epkgs.visual-fill-column
+    { config, pkgs, ... }: {
+      programs.emacs = {
+        enable = true;
+        package = pkgs.emacs;  # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
+      	extraPackages = epkgs: [
+      	  epkgs.use-package
+      	  epkgs.cask
+      	  epkgs.counsel-projectile
+          epkgs.doom-modeline
+          epkgs.doom-themes
+      	  epkgs.nix-mode
+          epkgs.forge
+          epkgs.fsharp-mode
+          epkgs.general
+          epkgs.helpful
+          epkgs.hydra
+          epkgs.evil # Vim keybindings
+          epkgs.evil-collection
+          epkgs.evil-nerd-commenter
 
-        # shells
-        epkgs.vterm
-        epkgs.eshell-z
-        epkgs.eshell-git-prompt
-      ];
-    };
-    
-    home.file.".emacs.d/.keep".text = "";
-    home.file.".emacs.d/init.el".source = ./init.el;
-  }
+          epkgs.all-the-icons-dired
+          epkgs.dired-open
+          epkgs.dired-hide-dotfiles
+          
+          # epkgs.evil-magit
+          epkgs.lsp-mode
+          epkgs.lsp-ui
+          epkgs.lsp-treemacs
+          epkgs.lsp-ivy
+          epkgs.magit # Git integration
+          epkgs.org-bullets
+          # epkgs.org-habit
+          epkgs.which-key # Keybinding suggestions
+          epkgs.ivy # Fuzzy completion
+          epkgs.ivy-rich
+          epkgs.counsel # Ivy-based commands
+          epkgs.swiper # Fuzzy search
+          epkgs.typescript-mode
+          epkgs.company # Auto-completion
+          epkgs.company-box
+          epkgs.projectile # Project management
+          epkgs.rainbow-delimiters # Colorful brackets
+          epkgs.visual-fill-column
+          # shells
+          epkgs.vterm
+          epkgs.eshell-z
+          epkgs.eshell-git-prompt
+        ];
+      };
+      
+      home.file.".emacs.d/.keep".text = "";
+      home.file.".emacs.d/init.el".source = ./init.el;
+    }
 #+end_src
 
 * Startup
@@ -135,22 +139,38 @@ To tangle ~./emacs.nix~ use <kbd>C-c C-v T</kbd>.
 
 #+begin_src emacs-lisp
   (my/leader-keys
-    "o"   '(:ignore t :which-key "org")
-    "oa"  '(org-agenda :which-key "agenda")
-    "oc"  '(org-capture :which-key "capture")
-    "or"  '(org-refile :which-key "refile")
-    "ot"  '(counsel-org-tags :which-key "tags"))
+    "o"    '(:ignore t :which-key "org")
+    "oa"   '(org-agenda :which-key "agenda")
+    "oc"   '(org-capture :which-key "capture")
+    "or"   '(org-refile :which-key "refile")
+    "ot"   '(counsel-org-tags :which-key "tags")
+    ;; org dates
+    "od"   '(:prefix t :which-key "date")
+    "od."  '(org-timestamp :which-key "timestamp")
+    "od!"  '(org-timestamp-inactive :which-key "inactive")
+    "ods"  '(org-schedule :which-key "schedule")
+    "odd"  '(org-deadline :which-key "deadline"))
 #+end_src
+
 
 ** Other general key maps
 #+begin_src emacs-lisp
   (my/leader-keys
     "f"  '(:ignore t :which-key "files")	
     "."  '(counsel-find-file :which-key "find file")
-    "fr" '(counsel-recentf :which-key "files")) 
+    "fr" '(counsel-recentf :which-key "files")
+    "fd" '(dired :which-key "dired")
+    )
 #+end_src
 
 * UI
+** Zone Mode
+
+#+begin_src emacs-lisp
+  (require 'zone)
+  (zone-when-idle 60)
+#+end_src
+
 ** Fonts
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil :font "Fira Code" :height 120)
@@ -181,6 +201,7 @@ To tangle ~./emacs.nix~ use <kbd>C-c C-v T</kbd>.
 
   ;; Disable line numbers for some modes
   (dolist (mode '(org-mode-hook
+  		tetris-mode
                   term-mode-hook
   		shell-mode-hook
   		treemacs-mode-hook
@@ -195,6 +216,23 @@ To tangle ~./emacs.nix~ use <kbd>C-c C-v T</kbd>.
      (setq visual-fill-column-width 120) ; Set the width of the text column
      (setq visual-fill-column-center-text t) ; Center the text
      (global-visual-fill-column-mode 1)) ; Enable globally
+
+  (defun my/tetris-mode-visual-fill ()
+      (setq visual-fill-column-width 40
+            visual-fill-column-center-text t)
+      (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :hook (tetris-mode . my/tetris-mode-visual-fill))
+  
+  (defun my/snake-mode-visual-fill ()
+      (setq visual-fill-column-width 80
+            visual-fill-column-center-text t)
+      (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :hook (snake-mode . my/tetris-mode-visual-fill))
+
 #+end_src
 
 ** Text Scaling, with Hydra
@@ -641,6 +679,99 @@ to create a block from the template type ~<el~ and press <kbd>tab<kbd>.
 
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 #+end_src
+* Dired
+
+- Ret :: open file
+- S-Ret :: open file new window
+- M-Rert :: open file new window, keep focus
+  
+** Key Bindings
+*** Navigation
+
+*** macs / Evil
+
+    n / j - next line
+    p / k - previous line
+    j / J - jump to file in buffer
+    RET - select file or directory
+    ^ - go to parent directory
+    S-RET / g O - Open file in “other” window
+    M-RET - Show file in other window without focusing (previewing files)
+    g o (dired-view-file) - Open file but in a “preview” mode, close with q
+    g / g r Refresh the buffer with revert-buffer after changing configuration (and after filesystem changes!)
+
+*** Marking files
+
+    m - Marks a file
+    u - Unmarks a file
+    U - Unmarks all files in buffer
+    * t / t - Inverts marked files in buffer
+    % m - Mark files in buffer using regular expression
+    * - Lots of other auto-marking functions
+    k / K - “Kill” marked items (refresh buffer with g / g r to get them back)
+    Many operations can be done on a single file if there are no active marks!
+
+*** Copying and Renaming files
+
+    C - Copy marked files (or if no files are marked, the current file)
+    Copying single and multiple files
+    U - Unmark all files in buffer
+    R - Rename marked files, renaming multiple is a move!
+    % R - Rename based on regular expression: ^test , old-\&
+
+Power command: C-x C-q (dired-toggle-read-only) - Makes all file names in the buffer editable directly to rename them! Press Z Z to confirm renaming or Z Q to abort.
+Deleting files
+
+    D - Delete marked file
+    d - Mark file for deletion
+    x - Execute deletion for marks
+    delete-by-moving-to-trash - Move to trash instead of deleting permanently
+ 
+*** Creating and extracting archives
+
+    Z - Compress or uncompress a file or folder to (.tar.gz)
+    c - Compress selection to a specific file
+    dired-compress-files-alist - Bind compression commands to file extension
+
+*** Other common operations
+
+    T - Touch (change timestamp)
+    M - Change file mode
+    O - Change file owner
+    G - Change file group
+    S - Create a symbolic link to this file
+    L - Load an Emacs Lisp file into Emacs
+
+
+
+  #+begin_src emacs-lisp
+    (use-package dired
+      :ensure nil
+      :commands (dired dired-jump)
+      :bind (("C-x C-j" . dired-jump))
+      :custom ((dired-listing-switches "-agho --group-directories-first"))
+      :config
+      (evil-collection-define-key 'normal 'dired-mode-map
+        "h" 'dired-single-up-directory
+        "l" 'dired-single-buffer))
+
+    (use-package all-the-icons-dired
+      :hook (dired-mode . all-the-icons-dired-mode))
+
+    (use-package dired-open
+      :config
+      ;; Doesn't work as expected!
+      ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+      (setq dired-open-extensions '(("png" . "feh")
+                                    ("mkv" . "mpv"))))
+
+    (use-package dired-hide-dotfiles
+      :hook (dired-mode . dired-hide-dotfiles-mode)
+      :config
+      (evil-collection-define-key 'normal 'dired-mode-map
+        "H" 'dired-hide-dotfiles-mode))
+  #+end_src
+
 * Terminals
 
 ** term-mode
@@ -726,16 +857,19 @@ to create a block from the template type ~<el~ and press <kbd>tab<kbd>.
 
 * NIX Configuration (in Emacs)
 #+begin_src emacs-lisp
-  (defun my/run-home-manager-switch ()
+    (defun my/run-home-manager-switch ()
     "sudo nixos-rebuild switch --flake ~/nixos-config#tuffy"
     (interactive)
     (async-shell-command "home-manager switch")
     (sleep-for 2))
 
-  (my/leader-keys
+    (my/leader-keys
     "n"   '(:ignore t :which-key "nix")
     "nh"  '(:prefix t :which-key "home manager")
     "nhs" '(my/run-home-manager-switch :which-key "switch")
-    "nhe" '( (lambda()(interactive)(find-file-existing "~/nixos-config/home/me/default.nix")) :which-key "edit"))
+    "nhe" '( (lambda()(interactive)(find-file-existing "~/nixos-config/home/me/default.nix")) :which-key "edit")
+    "nht" '( (lambda()(interactive)(find-file-existing "~/nixos-config/hosts/tuffy/default.nix")) :which-key "tuffy")
+
+    )
 #+end_src
 

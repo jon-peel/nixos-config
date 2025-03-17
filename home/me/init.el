@@ -53,16 +53,27 @@
     "tt" '(counsel-load-theme :which-key "choose theme")))
 
 (my/leader-keys
-  "o"   '(:ignore t :which-key "org")
-  "oa"  '(org-agenda :which-key "agenda")
-  "oc"  '(org-capture :which-key "capture")
-  "or"  '(org-refile :which-key "refile")
-  "ot"  '(counsel-org-tags :which-key "tags"))
+  "o"    '(:ignore t :which-key "org")
+  "oa"   '(org-agenda :which-key "agenda")
+  "oc"   '(org-capture :which-key "capture")
+  "or"   '(org-refile :which-key "refile")
+  "ot"   '(counsel-org-tags :which-key "tags")
+  ;; org dates
+  "od"   '(:prefix t :which-key "date")
+  "od."  '(org-timestamp :which-key "timestamp")
+  "od!"  '(org-timestamp-inactive :which-key "inactive")
+  "ods"  '(org-schedule :which-key "schedule")
+  "odd"  '(org-deadline :which-key "deadline"))
 
 (my/leader-keys
   "f"  '(:ignore t :which-key "files")	
   "."  '(counsel-find-file :which-key "find file")
-  "fr" '(counsel-recentf :which-key "files"))
+  "fr" '(counsel-recentf :which-key "files")
+  "fd" '(dired :which-key "dired")
+  )
+
+(require 'zone)
+(zone-when-idle 60)
 
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 100)
@@ -83,6 +94,7 @@
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
+		tetris-mode
                 term-mode-hook
 		shell-mode-hook
 		treemacs-mode-hook
@@ -94,6 +106,22 @@
    (setq visual-fill-column-width 120) ; Set the width of the text column
    (setq visual-fill-column-center-text t) ; Center the text
    (global-visual-fill-column-mode 1)) ; Enable globally
+
+(defun my/tetris-mode-visual-fill ()
+    (setq visual-fill-column-width 40
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (tetris-mode . my/tetris-mode-visual-fill))
+
+(defun my/snake-mode-visual-fill ()
+    (setq visual-fill-column-width 80
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (snake-mode . my/tetris-mode-visual-fill))
 
 (use-package hydra)
 
@@ -440,6 +468,32 @@
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "h" 'dired-single-up-directory
+    "l" 'dired-single-buffer))
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dired-open
+  :config
+  ;; Doesn't work as expected!
+  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+  (setq dired-open-extensions '(("png" . "feh")
+                                ("mkv" . "mpv"))))
+
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "H" 'dired-hide-dotfiles-mode))
+
 (use-package term
   :config
   (setq explicit-shell-file-name "zsh") ;; Change this to zsh, etc
@@ -501,13 +555,16 @@
   (eshell-git-prompt-use-theme 'powerline))
 
 (defun my/run-home-manager-switch ()
-  "sudo nixos-rebuild switch --flake ~/nixos-config#tuffy"
-  (interactive)
-  (async-shell-command "home-manager switch")
-  (sleep-for 2))
+"sudo nixos-rebuild switch --flake ~/nixos-config#tuffy"
+(interactive)
+(async-shell-command "home-manager switch")
+(sleep-for 2))
 
 (my/leader-keys
-  "n"   '(:ignore t :which-key "nix")
-  "nh"  '(:prefix t :which-key "home manager")
-  "nhs" '(my/run-home-manager-switch :which-key "switch")
-  "nhe" '( (lambda()(interactive)(find-file-existing "~/nixos-config/home/me/default.nix")) :which-key "edit"))
+"n"   '(:ignore t :which-key "nix")
+"nh"  '(:prefix t :which-key "home manager")
+"nhs" '(my/run-home-manager-switch :which-key "switch")
+"nhe" '( (lambda()(interactive)(find-file-existing "~/nixos-config/home/me/default.nix")) :which-key "edit")
+"nht" '( (lambda()(interactive)(find-file-existing "~/nixos-config/hosts/tuffy/default.nix")) :which-key "tuffy")
+
+)

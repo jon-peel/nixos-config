@@ -17,6 +17,11 @@
       epkgs.evil # Vim keybindings
       epkgs.evil-collection
       epkgs.evil-nerd-commenter
+
+      epkgs.all-the-icons-dired
+      epkgs.dired-open
+      epkgs.dired-hide-dotfiles
+      
       # epkgs.evil-magit
       epkgs.lsp-mode
       epkgs.lsp-ui
@@ -36,7 +41,6 @@
       epkgs.projectile # Project management
       epkgs.rainbow-delimiters # Colorful brackets
       epkgs.visual-fill-column
-
       # shells
       epkgs.vterm
       epkgs.eshell-z
