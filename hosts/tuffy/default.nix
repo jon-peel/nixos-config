@@ -8,7 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
-      ./gnome.nix
+      # ./gnome.nix
+      ./exwm.nix
       # ./mlvwm.nix
       # ./fvwm.nix
       # ./twm.nix
