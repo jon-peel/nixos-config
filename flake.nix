@@ -9,7 +9,11 @@
     };
   };
 
+  
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
+
+    nixpkgs.overlays = [ (import self.inputs.emacs-overlay) ];
+    
     nixosConfigurations = {
       tuffy = nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";

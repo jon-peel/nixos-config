@@ -9,15 +9,18 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
       # ./gnome.nix
-      ./exwm.nix
+      # ./exwm.nix
       # ./mlvwm.nix
       # ./fvwm.nix
       # ./twm.nix
       # ./openbox.nix
       # ./windowmaker.nix
-      # ./plasma.nix
+      ./kde.nix
     ];
 
+
+  
+  
   # Use the systemd-boot EFI boot loader.
   # boot.loader.systemd-boot.enable = true;
   boot.supportedFilesystems = [ "ntfs" ];
@@ -148,12 +151,12 @@
   # services.printing.enable = true;
 
   # Enable sound.
-  # hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.enable = true;
   # OR
-  services.pipewire = {
-    enable = true;
-    pulse.enable = true;
-  };
+  # services.pipewire = {
+  #  enable = true;
+  #  pulse.enable = true;
+  #};
 
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
