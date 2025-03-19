@@ -334,6 +334,7 @@
 
 (setq org-directory "~/OneDrive/org/")
 (setq org-agenda-files '("~/OneDrive/org/tasks.org"
+			 "~/OneDrive/org/shed.org"
                          "~/OneDrive/org/anniversaries.org"))
 
 (setq org-capture-templates

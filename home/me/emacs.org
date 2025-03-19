@@ -527,6 +527,7 @@ NOTE: Make sure to configure a GitHub token before using this package!
 #+begin_src emacs-lisp
   (setq org-directory "~/OneDrive/org/")
   (setq org-agenda-files '("~/OneDrive/org/tasks.org"
+  			 "~/OneDrive/org/shed.org"
                            "~/OneDrive/org/anniversaries.org"))
 #+end_src
 

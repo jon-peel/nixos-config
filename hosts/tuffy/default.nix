@@ -8,14 +8,14 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
-      # ./gnome.nix
+      ./gnome.nix
       # ./exwm.nix
       # ./mlvwm.nix
       # ./fvwm.nix
       # ./twm.nix
       # ./openbox.nix
       # ./windowmaker.nix
-      ./kde.nix
+      # ./kde.nix
     ];
 
 
@@ -151,7 +151,7 @@
   # services.printing.enable = true;
 
   # Enable sound.
-  hardware.pulseaudio.enable = true;
+  # hardware.pulseaudio.enable = true;
   # OR
   # services.pipewire = {
   #  enable = true;
