@@ -28,7 +28,7 @@
       jetbrains-toolbox
       nvtopPackages.full	
       tree
-    
+      gnuplot 
     # Fonts
     noto-fonts
     noto-fonts-emoji
@@ -49,7 +49,8 @@
       nixd
     gitAndTools.gh
     github-cli
-    dotnet-sdk_9
+      dotnet-sdk_9
+      mono
     fsautocomplete
 
       # other
