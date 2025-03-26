@@ -221,6 +221,9 @@ home-manager = {
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
+  services.atftpd.enable = true;
+  services.atftpd.root = "/home/me/tftp";
+    
   
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
