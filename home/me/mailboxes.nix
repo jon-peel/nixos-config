@@ -1,0 +1,6 @@
+{ ... }:
+{
+  services.davmail = {
+    enable = true;    
+  };
+}

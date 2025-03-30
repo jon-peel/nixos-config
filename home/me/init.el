@@ -202,9 +202,11 @@
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-
 (use-package forge)
+
+(my/leader-keys
+  "g"  '(:ignore t :which-key "git")
+  "gg" '(magit-status  :which-key "magit status"))
 
 (defun efs/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))

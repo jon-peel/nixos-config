@@ -50,6 +50,11 @@
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  #networking.interfaces.eth0 = {
+  #  dhcp = false;
+  #  address = "192.168.0.1";
+  #  prefixLength = 24;
+  #};
 
   # Set your time zone.
   time.timeZone = "Europe/Moscow";
@@ -222,7 +227,7 @@ home-manager = {
   };
 
   services.atftpd.enable = true;
-  services.atftpd.root = "/home/me/tftp";
+  services.atftpd.root = "/srv/tftp";
     
   
   # Some programs need SUID wrappers, can be configured further or are

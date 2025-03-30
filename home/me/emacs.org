@@ -352,10 +352,17 @@ NOTE: Make sure to configure a GitHub token before using this package!
   (use-package magit
     :custom
     (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-  
   (use-package forge)
 #+end_src
+
+*** Git Key bindings
+#+begin_src emacs-lisp
+    (my/leader-keys
+      "g"  '(:ignore t :which-key "git")
+      "gg" '(magit-status  :which-key "magit status"))
+#+end_src
+
+#+RESULTS:
 
 ** Languages
 *** Language Server Protocol
