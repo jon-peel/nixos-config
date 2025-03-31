@@ -2,8 +2,9 @@
 
 {
   imports = [
-    ./mailboxes.nix
-    ./emacs.nix    
+   # ./mailboxes.nix
+    ./emacs.nix
+    ./vscode.nix
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -276,25 +277,6 @@ AddToMenu MenuFvwmRoot "Root Menu" Title
   };
 
 
-  programs.vscode = {
-    enable = true;
-    profiles.default = {
-      extensions = with pkgs.vscode-extensions; [
-        ms-azuretools.vscode-docker
-        ms-vscode-remote.remote-containers
-        ms-vscode-remote.vscode-remote-extensionpack
-      ];
-      userSettings = {
-        "editor.fontSize" = 14;
-        "files.autoSave" = "afterDelay";
-        "window.restoreWindows" = "none";
-        "window.autoDetectColorScheme" = true;
-        "workbench.preferredDarkColorTheme" = "Default Dark+";
-        "workbench.preferredLightColorTheme" = "Default Light+";
-        # "dev.containers.dockerPath" = "podman";
-      };
-    };
-  };
   
   
   
