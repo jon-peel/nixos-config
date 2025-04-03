@@ -7,6 +7,7 @@
         ms-azuretools.vscode-docker
         ms-vscode-remote.remote-containers
         ms-vscode-remote.vscode-remote-extensionpack
+        ms-dotnettools.csdevkit
       ];
       userSettings = {
         "editor.fontSize" = 14;
