@@ -3,14 +3,20 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    eyeBrowse = {
+      url = "path:/home/me/nixos-config/programs/EyeBrowse";
+      inputs.nixpkgs.follows = "nixpkgs"; # Share the nixpkgs input
+    };
   };
 
   
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, eyeBrowse, ... }@inputs: {
 
     nixpkgs.overlays = [ (import self.inputs.emacs-overlay) ];
     

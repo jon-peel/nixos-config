@@ -208,17 +208,9 @@ home-manager = {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
 
-
-
-  nixpkgs.overlays = [
-    (final: prev: {
-      EyeBrowse = (builtins.getFlake "/home/me/nixos-config/programs/EyeBrowse").packages.${pkgs.system}.default;
-    })
-  ];
-
   environment.systemPackages = with pkgs; [
     nerd-fonts.jetbrains-mono 
-    EyeBrowse
+    inputs.eyeBrowse.packages.${pkgs.system}.default
     distrobox
     home-manager
     ripgrep

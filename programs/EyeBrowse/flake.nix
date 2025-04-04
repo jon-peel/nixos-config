@@ -58,7 +58,7 @@
             
             meta = {
               description = "Eyebrowse - My legacy binary package";
-              license = pkgs.lib.licenses.unfree; # Adjust as appropriate
+              license = pkgs.lib.licenses.mit; # Adjust as appropriate
             };
           };
         };
