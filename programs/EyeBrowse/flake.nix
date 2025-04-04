@@ -24,12 +24,12 @@
         packages = {
           default = self.packages.${system}.EyeBrowse;
           
-          my-binary = pkgs.stdenv.mkDerivation {
+          EyeBrowse = pkgs.stdenv.mkDerivation {
             pname = "EyeBrowse";
             version = "1.0.0";  # Adjust as needed
             
             # Source is just your binary file
-            src = ./EyeBrowse # Assumes the binary is in the same directory as flake.nix
+            src = ./EyeBrowse; # Assumes the binary is in the same directory as flake.nix
             
             # If you have the binary elsewhere, you can use:
             # src = /path/to/directory/containing/binary;

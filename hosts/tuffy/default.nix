@@ -4,6 +4,7 @@
 
 { config, lib, pkgs, inputs, ... }:
 
+
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -79,8 +80,8 @@
     # autologinSessions = [ "tty2" "tty3" "tty4" "tty5" "tty6" ];
 #    useXkbConfig = true;
 #    extraOptions = "--term xterm-256color";
-#  };
-  
+  #  };
+ 
 
   
   #Adjust screen brightness automatically
@@ -206,9 +207,18 @@ home-manager = {
   nixpkgs.config.allowUnfree = true;
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+
+
+
+  nixpkgs.overlays = [
+    (final: prev: {
+      EyeBrowse = (builtins.getFlake "/home/me/nixos-config/programs/EyeBrowse").packages.${pkgs.system}.default;
+    })
+  ];
+
   environment.systemPackages = with pkgs; [
     nerd-fonts.jetbrains-mono 
-  
+    EyeBrowse
     distrobox
     home-manager
     ripgrep
