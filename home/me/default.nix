@@ -45,8 +45,8 @@
     nerd-fonts.fira-code
     nerd-fonts.jetbrains-mono
     powerline
-    powerline-fonts
-
+      powerline-fonts
+#      libreoffice
       # Coding
       nixd
     gitAndTools.gh

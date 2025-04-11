@@ -5,6 +5,7 @@
     enable = true;
     package = pkgs.emacs;  # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
   	extraPackages = epkgs: [
+      epkgs.ascii-art-to-unicode
   	  epkgs.use-package
   	  epkgs.cask
   	  epkgs.counsel-projectile

@@ -9,7 +9,7 @@
       },
       "locked": {
         "lastModified": 0,
-        "narHash": "sha256-PpVUpeIOabklQOQ9YSGavBcZC5Qw6vyVUdCPUJPkTuo=",
+        "narHash": "sha256-+7zP1tfmlm4RvbbS3pS402CA1upUq8bwUr6vqyAYoOg=",
         "path": "/home/me/nixos-config/programs/EyeBrowse",
         "type": "path"
       },

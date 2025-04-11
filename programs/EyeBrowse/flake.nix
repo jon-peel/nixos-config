@@ -10,14 +10,10 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
-        # You may need to adjust these dependencies based on what your binary requires
         runtimeDeps = with pkgs; [
-          # Add runtime dependencies here, for example:
-          # glibc
-          # zlib
-          # openssl
-          # etc.
+          glibc
+          zlib
+          stdenv.cc.cc
         ];
       in
       {
@@ -26,38 +22,35 @@
           
           EyeBrowse = pkgs.stdenv.mkDerivation {
             pname = "EyeBrowse";
-            version = "1.0.0";  # Adjust as needed
+            version = "1.0.3";  # Adjust as needed
             
-            # Source is just your binary file
-            src = ./EyeBrowse; # Assumes the binary is in the same directory as flake.nix
-            
-            # If you have the binary elsewhere, you can use:
-            # src = /path/to/directory/containing/binary;
-            
-            # Skip phases that don't apply to pre-built binaries
+            dontUnpack = true;
             dontBuild = true;
             dontConfigure = true;
+
+            # Use nativeBuildInputs for build-time dependencies
+            nativeBuildInputs = [ pkgs.autoPatchelfHook ];
+
+            # Use buildInputs for run-time dependencies
+            buildInputs = runtimeDeps;
             
             # The binary needs to be executable
             installPhase = ''
               mkdir -p $out/bin
-              cp ./EyeBrowse $out/bin/EyeBrowse
-              chmod +x $out/bin/Eyebrowse
+              cp ${./EyeBrowse} $out/bin/EyeBrowse
+              chmod +x $out/bin/EyeBrowse
             '';
-            
-            # Add runtime dependencies to the binary
-            runtimeDependencies = runtimeDeps;
             
             # For dynamically linked binaries, ensure libraries are found
-            preFixup = ''
-              patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $out/bin/Eyebrowse
-              
-              # If the binary needs specific shared libraries, you can add them:
-              # patchelf --set-rpath "${pkgs.lib.makeLibraryPath runtimeDeps}" $out/bin/Eyebrowse
-            '';
+            #preFixup = ''
+            #  patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $out/bin/EyeBrowse
+            #  
+            #  # If the binary needs specific shared libraries, you can add them:
+            #  # patchelf --set-rpath "${pkgs.lib.makeLibraryPath runtimeDeps}" $out/bin/EyeBrowse
+            #'';
             
             meta = {
-              description = "Eyebrowse - My legacy binary package";
+              description = "EyeBrowse - My legacy binary package";
               license = pkgs.lib.licenses.mit; # Adjust as appropriate
             };
           };
@@ -69,7 +62,7 @@
           
           EyeBrowse = {
             type = "app";
-            program = "${self.packages.${system}.EyeBrowse}/bin/Eyebrowse";
+            program = "${self.packages.${system}.EyeBrowse}/bin/EyeBrowse";
           };
         };
       }

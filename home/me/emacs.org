@@ -14,6 +14,7 @@ To tangle ~./emacs.nix~ use <kbd>C-c C-v T</kbd>.
       enable = true;
       package = pkgs.emacs;  # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
     	extraPackages = epkgs: [
+        epkgs.ascii-art-to-unicode
     	  epkgs.use-package
     	  epkgs.cask
     	  epkgs.counsel-projectile
@@ -135,23 +136,6 @@ To tangle ~./emacs.nix~ use <kbd>C-c C-v T</kbd>.
       
       "t"  '(:ignore t :which-key "toggles")
       "tt" '(counsel-load-theme :which-key "choose theme")))
-#+end_src
-
-** Org Mode keys
-
-#+begin_src emacs-lisp
-  (my/leader-keys
-    "o"    '(:ignore t :which-key "org")
-    "oa"   '(org-agenda :which-key "agenda")
-    "oc"   '(org-capture :which-key "capture")
-    "or"   '(org-refile :which-key "refile")
-    "ot"   '(counsel-org-tags :which-key "tags")
-    ;; org dates
-    "od"   '(:prefix t :which-key "date")
-    "od."  '(org-timestamp :which-key "timestamp")
-    "od!"  '(org-timestamp-inactive :which-key "inactive")
-    "ods"  '(org-schedule :which-key "schedule")
-    "odd"  '(org-deadline :which-key "deadline"))
 #+end_src
 
 
@@ -482,6 +466,43 @@ NOTE: Make sure to configure a GitHub token before using this package!
         (setq org-log-into-drawer t)
         )
 #+end_src
+** Org files
+#+begin_src emacs-lisp
+  (setq org-directory "~/OneDrive/org/")
+  (setq org-agenda-files '("~/OneDrive/org/tasks.org"
+  			 "~/OneDrive/org/shed.org"
+                           "~/OneDrive/org/anniversaries.org"))
+#+end_src
+
+** Org Mode keys
+
+#+begin_src emacs-lisp
+  (my/leader-keys
+    "o"    '(:ignore t :which-key "org")
+    "oa"   '(org-agenda :which-key "agenda")
+    "oc"   '(org-capture :which-key "capture")
+    "or"   '(org-refile :which-key "refile")
+    "ot"   '(counsel-org-tags :which-key "tags")
+    "of"   '((lambda () (interactive) (dired org-directory)) :which-key "files")
+    ;; org dates
+    "od"   '(:prefix t :which-key "date")
+    "od."  '(org-timestamp :which-key "timestamp")
+    "od!"  '(org-timestamp-inactive :which-key "inactive")
+    "ods"  '(org-schedule :which-key "schedule")
+    "odd"  '(org-deadline :which-key "deadline"))
+#+end_src
+
+#+RESULTS:
+
+#+begin_src emacs-lisp
+(dired org-directory)
+#+end_src
+
+#+RESULTS:
+: #<buffer org>
+
+
+
 ** Org UI
 *** Org fonts
 #+begin_src emacs-lisp
@@ -530,14 +551,6 @@ NOTE: Make sure to configure a GitHub token before using this package!
   (use-package visual-fill-column
     :hook (org-mode . my/org-mode-visual-fill))
 #+end_src
-** Org files
-#+begin_src emacs-lisp
-  (setq org-directory "~/OneDrive/org/")
-  (setq org-agenda-files '("~/OneDrive/org/tasks.org"
-  			 "~/OneDrive/org/shed.org"
-                           "~/OneDrive/org/anniversaries.org"))
-#+end_src
-
 ** Capture
 #+begin_src emacs-lisp
   (setq org-capture-templates
@@ -677,8 +690,10 @@ to create a block from the template type ~<el~ and press <kbd>tab<kbd>.
 #+begin_src emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((emacs-lisp . t)
-     (python . t)))
+   '((ditaa . t) 
+     (emacs-lisp . t)
+     (python . t)
+     (shell . t)))
 
   (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
@@ -692,6 +707,15 @@ to create a block from the template type ~<el~ and press <kbd>tab<kbd>.
 
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 #+end_src
+
+
+** Ditaa
+
+#+begin_src emacs-lisp
+(setq org-ditaa-jar-path nil)  ;; We're not using the jar directly
+(setq org-babel-ditaa-command "/run/current-system/sw/bin/ditaa")
+#+end_src
+
 * Dired
 
 - Ret :: open file

@@ -53,19 +53,6 @@
     "tt" '(counsel-load-theme :which-key "choose theme")))
 
 (my/leader-keys
-  "o"    '(:ignore t :which-key "org")
-  "oa"   '(org-agenda :which-key "agenda")
-  "oc"   '(org-capture :which-key "capture")
-  "or"   '(org-refile :which-key "refile")
-  "ot"   '(counsel-org-tags :which-key "tags")
-  ;; org dates
-  "od"   '(:prefix t :which-key "date")
-  "od."  '(org-timestamp :which-key "timestamp")
-  "od!"  '(org-timestamp-inactive :which-key "inactive")
-  "ods"  '(org-schedule :which-key "schedule")
-  "odd"  '(org-deadline :which-key "deadline"))
-
-(my/leader-keys
   "f"  '(:ignore t :which-key "files")	
   "."  '(counsel-find-file :which-key "find file")
   "fr" '(counsel-recentf :which-key "files")
@@ -294,6 +281,27 @@
   (setq org-log-into-drawer t)
   )
 
+(setq org-directory "~/OneDrive/org/")
+(setq org-agenda-files '("~/OneDrive/org/tasks.org"
+			 "~/OneDrive/org/shed.org"
+                         "~/OneDrive/org/anniversaries.org"))
+
+(my/leader-keys
+  "o"    '(:ignore t :which-key "org")
+  "oa"   '(org-agenda :which-key "agenda")
+  "oc"   '(org-capture :which-key "capture")
+  "or"   '(org-refile :which-key "refile")
+  "ot"   '(counsel-org-tags :which-key "tags")
+  "of"   '((lambda () (interactive) (dired org-directory)) :which-key "files")
+  ;; org dates
+  "od"   '(:prefix t :which-key "date")
+  "od."  '(org-timestamp :which-key "timestamp")
+  "od!"  '(org-timestamp-inactive :which-key "inactive")
+  "ods"  '(org-schedule :which-key "schedule")
+  "odd"  '(org-deadline :which-key "deadline"))
+
+(dired org-directory)
+
 (defun my/org-font-setup ()
   ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
@@ -333,11 +341,6 @@
 
 (use-package visual-fill-column
   :hook (org-mode . my/org-mode-visual-fill))
-
-(setq org-directory "~/OneDrive/org/")
-(setq org-agenda-files '("~/OneDrive/org/tasks.org"
-			 "~/OneDrive/org/shed.org"
-                         "~/OneDrive/org/anniversaries.org"))
 
 (setq org-capture-templates
        '(
@@ -459,8 +462,10 @@
 
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((emacs-lisp . t)
-   (python . t)))
+ '((ditaa . t) 
+   (emacs-lisp . t)
+   (python . t)
+   (shell . t)))
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
@@ -473,6 +478,9 @@
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+(setq org-ditaa-jar-path nil)  ;; We're not using the jar directly
+(setq org-babel-ditaa-command "/run/current-system/sw/bin/ditaa")
 
 (use-package dired
   :ensure nil

@@ -3,9 +3,9 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, inputs, ... }:
-
-
-{
+let
+  tex = import ./tex.nix { inherit pkgs; };
+in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
@@ -214,9 +214,12 @@ home-manager = {
     distrobox
     home-manager
     ripgrep
+    libreoffice
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     vlc
     wget
+    ditaa
+    tex
   ];
 
 
