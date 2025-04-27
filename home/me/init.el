@@ -1,3 +1,7 @@
+;;  (all-the-icons-install-fonts t)
+;; (dolist (font all-the-icons-font-names)
+;;  (print (cons font (find-font (font-spec :name font)))))
+
 (setq inhibit-startup-message t)
 
 ;; Set a dark theme quickly, becase the doom theme sometimes takes a while to laod
@@ -11,6 +15,12 @@
 (menu-bar-mode -1)          ; Disable the menu bar
 
 (setq visible-bell t)
+
+(global-auto-revert-mode t)
+(setq auto-revert-verbose nil)           ; Suppress messages from auto-revert
+(setq global-auto-revert-non-file-buffers t) ; Also revert Dired and other buffers
+
+(setq revert-without-query '(".*"))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -38,19 +48,24 @@
   (evil-collection-init))
 
 (use-package general
-  :config
-  (general-create-definer my/leader-keys
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
+    :config
+    (general-create-definer my/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
 
-  (my/leader-keys
-    "b"  '(:ignore t :which-key "buffers")
-    "bk" '((lambda () (interactive) (kill-buffer (current-buffer)))  :which-key "kill buffer")
-    "bs" '(counsel-switch-buffer :which-key "switch buffer")
-    
-    "t"  '(:ignore t :which-key "toggles")
-    "tt" '(counsel-load-theme :which-key "choose theme")))
+    (my/leader-keys
+      "b"  '(:ignore t :which-key "buffers")
+      "bk" '((lambda () (interactive) (kill-buffer (current-buffer)))  :which-key "kill buffer")
+      "bs" '(counsel-switch-buffer :which-key "switch buffer")
+      
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme")))
+
+(my/leader-keys
+  "e"  '(:ignore t :which-key "emacs")
+  "ed"    '(dashboard-open :which-key "dashboard")
+  "ec"    '((lambda () (interactive) (find-file "/home/me/nixos-config/home/me/emacs.org")) :which-key "config file"))
 
 (my/leader-keys
   "f"  '(:ignore t :which-key "files")	
@@ -59,8 +74,27 @@
   "fd" '(dired :which-key "dired")
   )
 
+(defun insert-latex-multicols ()
+  "Insert a LaTeX multicols environment for Org mode."
+  (interactive)
+  (insert "
+#+BEGIN_EXPORT latex
+\\end{multicols}
+#+END_EXPORT
+    
+#+BEGIN_EXPORT latex
+\\begin{multicols}{2}
+#+END_EXPORT
+    "))
+
+(my/leader-keys
+  "s"  '(:ignore t :which-key "snippets")	
+  "sm"  '(insert-latex-multicols :which-key "multicol"))
+
 (require 'zone)
 (zone-when-idle 60)
+
+(setq inhibit-compacting-font-caches t)
 
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 100)
@@ -77,7 +111,7 @@
 (set-face-attribute 'mode-line nil :height 120)
 (column-number-mode)
 
-(global-display-line-numbers-mode t)
+(global-display-line-numbers-mode 0)
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -86,8 +120,12 @@
 		shell-mode-hook
 		treemacs-mode-hook
 		vterm-mode-hook
+		pdf-view-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(setq split-height-threshold nil)
+(setq split-width-threshold 60)
 
 (with-eval-after-load 'visual-fill-column
    (setq visual-fill-column-width 120) ; Set the width of the text column
@@ -189,7 +227,7 @@
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-(use-package forge)
+;; (use-package forge)
 
 (my/leader-keys
   "g"  '(:ignore t :which-key "git")
@@ -256,20 +294,41 @@
   :config
   (setq typescript-indent-level 2))
 
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "~/Projects/Code")
-    (setq projectile-project-search-path '("~/Projects/Code")))
-  (setq projectile-switch-project-action #'projectile-dired))
+;; Basic project.el configuration
+(require 'project)
 
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
+;; If you want project.el to use specific version control systems
+(setq project-vc-extra-root-markers '(".project" "package.json" "Cargo.toml" "pyproject.toml"))
+
+(defun my/create-project-marker ()
+  "Create a .project file in the current directory and register it as a project."
+  (interactive)
+  (let ((project-dir (read-directory-name "Create project in directory: " default-directory)))
+    (with-temp-buffer
+      (write-file (expand-file-name ".project" project-dir)))
+    (message "Created .project marker in %s" project-dir)
+    (when (y-or-n-p "Register this directory as a project? ")
+      (project-remember-project project-dir))))
+
+(my/leader-keys
+  "p"     '(:ignore t :which-key "project")
+  "pp"    '(project-switch-project :which-key "switch project")
+  "pf"    '(project-find-file :which-key "find file")
+  "pb"    '(project-switch-to-buffer :which-key "switch buffer")
+  "pd"    '(project-dired :which-key "dired")
+  "pg"    '(consult-ripgrep :which-key "ripgrep")
+  "pk"    '(project-kill-buffers :which-key "kill buffers")
+  "ps"    '(project-shell :which-key "shell")
+  "pc"    '(project-compile :which-key "compile")
+  "pa"    '(project-remember-project :which-key "add project")
+  "pr"    '(project-forget-project :which-key "remove project")
+  "pn"    '(my/create-project-marker :which-key "new project marker")
+  
+  ;; Consult integration
+  "pC"    '(:prefix t :which-key "consult")
+  "pCb"   '(consult-project-buffer :which-key "project buffers")
+  "pCf"   '(consult-find :which-key "find")
+  "pCg"   '(consult-grep :which-key "grep"))
 
 (defun my/org-mode-setup ()
   (org-indent-mode)
@@ -299,8 +358,6 @@
   "od!"  '(org-timestamp-inactive :which-key "inactive")
   "ods"  '(org-schedule :which-key "schedule")
   "odd"  '(org-deadline :which-key "deadline"))
-
-(dired org-directory)
 
 (defun my/org-font-setup ()
   ;; Replace list hyphen with dot
@@ -373,7 +430,7 @@
 
        ("s" "Sleep Entry" table-line
           (file+headline "sleep.org" "Data")
-          "|#|%^{Date}u|%^{Move (kcal)}|%^{Exercise (min)}|%^{Caffeine (mg)}|%^{Tim in daylight (min)}|%^{Time in bed}|%^{Time out of bed}|%^{Sleep Duration (h:mm)}||%^{Tags}g|"
+          "| |%^{Date}u|%^{Move (kcal)}|%^{Exercise (min)}|%^{Caffeine (mg)}|%^{Tim in daylight (min)}|%^{Time in bed}|%^{Time out of bed}|%^{Sleep Duration (h:mm)}||%^{Tags}g|"
           :immediate-finish t :jump-to-captured t
           )
 
@@ -479,34 +536,38 @@
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
+(setq org-confirm-babel-evaluate nil)
+
 (setq org-ditaa-jar-path nil)  ;; We're not using the jar directly
 (setq org-babel-ditaa-command "/run/current-system/sw/bin/ditaa")
 
 (use-package dired
-  :ensure nil
-  :commands (dired dired-jump)
-  :bind (("C-x C-j" . dired-jump))
-  :custom ((dired-listing-switches "-agho --group-directories-first"))
-  :config
-  (evil-collection-define-key 'normal 'dired-mode-map
-    "h" 'dired-single-up-directory
-    "l" 'dired-single-buffer))
+      :ensure nil
+      :commands (dired dired-jump)
+      :bind (("C-x C-j" . dired-jump))
+      :custom ((dired-listing-switches "-agho --group-directories-first"))
+      :config
+      (evil-collection-define-key 'normal 'dired-mode-map
+        "h" 'dired-single-up-directory
+        "l" 'dired-single-buffer))
 
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
+;; (all-the-icons-install-fonts t)
+(face-attribute 'default :font)
+    
+    (use-package dired-open
+      :config
+      ;; Doesn't work as expected!
+      ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+      (setq dired-open-extensions '(("png" . "feh")
+                                    ("mkv" . "mpv"))))
 
-(use-package dired-open
-  :config
-  ;; Doesn't work as expected!
-  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
-  (setq dired-open-extensions '(("png" . "feh")
-                                ("mkv" . "mpv"))))
-
-(use-package dired-hide-dotfiles
-  :hook (dired-mode . dired-hide-dotfiles-mode)
-  :config
-  (evil-collection-define-key 'normal 'dired-mode-map
-    "H" 'dired-hide-dotfiles-mode))
+    (use-package dired-hide-dotfiles
+      :hook (dired-mode . dired-hide-dotfiles-mode)
+      :config
+      (evil-collection-define-key 'normal 'dired-mode-map
+        "H" 'dired-hide-dotfiles-mode))
 
 (use-package term
   :config
@@ -568,6 +629,42 @@
   (add-hook 'eshell-alias-load-hook 'eshell-load-zsh-aliases)
   (eshell-git-prompt-use-theme 'powerline))
 
+(require 'ox-latex)
+(unless (boundp 'org-latex-classes)
+  (setq org-latex-classes nil))
+
+(setq org-latex-hyperref-template 
+      "\\hypersetup{\n  colorlinks=true,\n  linkcolor=blue,\n  filecolor=cyan,\n  urlcolor=magenta,\n  citecolor=green\n}")
+
+;(add-to-list 'org-latex-classes
+;             '("article"
+;               "\\documentclass{article}"
+;               ("\\section{%s}" . "\\section*{%s}")
+;               ("\\subsection{%s}" . "\\subsection*{%s}")
+;               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+;               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+;               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))  
+(add-to-list 'org-latex-classes
+             '("koma-article"
+               "\\documentclass{scrartcl}"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install)
+  ;; Automatically use pdf-view-mode for .pdf files
+  (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode)))
+
+(add-hook 'pdf-view-mode-hook
+          (lambda ()
+            (display-line-numbers-mode -1)
+            (visual-fill-column-mode -1)))
+
 (defun my/run-home-manager-switch ()
 "sudo nixos-rebuild switch --flake ~/nixos-config#tuffy"
 (interactive)
@@ -582,3 +679,46 @@
 "nht" '( (lambda()(interactive)(find-file-existing "~/nixos-config/hosts/tuffy/default.nix")) :which-key "tuffy")
 
 )
+
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+
+  (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+  (setq dashboard-startup-banner 2)
+  (setq dashboard-center-content t)
+  (setq dashboard-vertically-center-content t)
+  
+  (setq dashboard-show-shortcuts t)
+  )
+
+(setq dashboard-items '((recents  . 5)
+                        (bookmarks . 5)
+                        (projects . 5)
+                        (agenda . 5)
+                        (registers . 5)))
+
+(setq dashboard-startupify-list '(dashboard-insert-banner
+                                dashboard-insert-newline
+                                dashboard-insert-banner-title
+                                dashboard-insert-newline
+                                dashboard-insert-navigator
+                                dashboard-insert-newline
+                                dashboard-insert-init-info
+                                dashboard-insert-items
+                                dashboard-insert-newline
+                                dashboard-insert-footer))
+
+(setq dashboard-set-navigator t)
+  (setq dashboard-projects-backend 'project-el)
+
+  ;; To enable cycle navigation between each section:
+  (setq dashboard-navigation-cycle t)
+
+;; (setq dashboard-icon-type 'all-the-icons)  ; use `all-the-icons' package
+(setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
+(setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
+  
+  ;; (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)

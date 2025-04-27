@@ -1,8 +1,7 @@
-{ pkgs, ... }:
+{pkgs, ... }:
 
-{
-  imports = [
-   # ./mailboxes.nix
+{  imports = [
+   # ./mailboxs.nix
     ./emacs.nix
     ./vscode.nix
   ];
@@ -26,6 +25,8 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
+    isync
+    
       firefox
       jetbrains-toolbox
       nvtopPackages.full	
@@ -66,6 +67,8 @@
       zsh-powerlevel10k
       remmina
 
+
+      
     # Fun
     xorg.xeyes
     xorg.xclock
@@ -96,6 +99,8 @@
 
   # home.file.".emacs.d/init.el".source = ./init.el;
   home.file = {
+    ".config/isyncrc".source = ./isyncrc;
+    
     ".config/onedrive/sync_list".text = ''
 org
 Mongo-export
@@ -214,6 +219,11 @@ AddToMenu MenuFvwmRoot "Root Menu" Title
     EDITOR = "emacs";
   };
 
+  services.davmail = {
+    enable = true;
+  };
+    
+  
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 

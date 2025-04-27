@@ -1,18 +1,17 @@
 { config, pkgs, ... }: {
-
-  
   programs.emacs = {
     enable = true;
     package = pkgs.emacs;  # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
   	extraPackages = epkgs: [
+      epkgs.dashboard
       epkgs.ascii-art-to-unicode
   	  epkgs.use-package
   	  epkgs.cask
-  	  epkgs.counsel-projectile
+  	  epkgs.consult
       epkgs.doom-modeline
       epkgs.doom-themes
   	  epkgs.nix-mode
-      epkgs.forge
+      # epkgs.forge
       epkgs.fsharp-mode
       epkgs.general
       epkgs.helpful
@@ -20,8 +19,10 @@
       epkgs.evil # Vim keybindings
       epkgs.evil-collection
       epkgs.evil-nerd-commenter
-
+      epkgs.pdf-tools
+      epkgs.all-the-icons
       epkgs.all-the-icons-dired
+      epkgs.nerd-icons 
       epkgs.dired-open
       epkgs.dired-hide-dotfiles
       
@@ -41,7 +42,6 @@
       epkgs.typescript-mode
       epkgs.company # Auto-completion
       epkgs.company-box
-      epkgs.projectile # Project management
       epkgs.rainbow-delimiters # Colorful brackets
       epkgs.visual-fill-column
       # shells

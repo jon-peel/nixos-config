@@ -154,7 +154,8 @@ in {
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
   # Enable CUPS to print documents.
-  # services.printing.enable = true;
+  services.printing.enable = true;
+  services.printing.drivers = with pkgs; [ gutenprint canon-cups-ufr2 cups-filters cnijfilter2 canon-capt cups-bjnp carps-cups ];
 
   # Enable sound.
   # hardware.pulseaudio.enable = true;
@@ -209,8 +210,16 @@ home-manager = {
   # $ nix search wget
 
   environment.systemPackages = with pkgs; [
-    nerd-fonts.jetbrains-mono 
-    inputs.eyeBrowse.packages.${pkgs.system}.default
+     font-awesome
+     material-icons
+     material-design-icons
+     nerd-fonts.fira-code
+     nerd-fonts.droid-sans-mono
+     nerd-fonts.jetbrains-mono
+     emacs-all-the-icons-fonts
+
+    jetbrains.rider
+    # (jetbrains.plugins.addPlugins jetbrains.rider ["github-copilot"])
     distrobox
     home-manager
     ripgrep

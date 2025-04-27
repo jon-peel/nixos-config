@@ -1,0 +1,76 @@
+IMAPAccount Polymorphic
+Host localhost
+Port 1143
+User jonathanp@polymorphic.group
+Pass "not used"
+TLSType None
+AuthMechs Login
+Timeout 200
+
+IMAPStore Poly-Remote
+Account Polymorphic
+
+MaildirStore Poly-Maildir
+Path ~/.mail/poly/
+Inbox ~/.mail/poly/Inbox
+SubFolders Verbatim
+
+Channel polymorphic
+Far :Poly-Remote:
+Near :Poly-Maildir:
+Pattern *  # !Archive !Sent
+Create Both
+Expunge Both
+SyncState *
+
+
+
+IMAPAccount CommStack
+Host localhost
+Port 1143
+User jonathanp@commstack.co.uk
+Pass "not used"
+TLSType None
+AuthMechs Login
+
+IMAPStore Comm-Remote
+Account CommStack
+
+MaildirStore Comm-Maildir
+Path ~/.mail/comm/
+Inbox ~/.mail/comm/Inbox
+SubFolders Verbatim
+
+Channel commstack
+Far :Comm-Remote:
+Near :Comm-Maildir:
+Pattern *  # !Archive !Sent
+Create Both
+Expunge Both
+SyncState *
+
+
+
+IMAPAccount JonathanPeel
+Host imap.gmail.com
+# Port 1143
+User me@jonathanpeel.co.za
+PassCmd "pass email/jp"
+TLSType IMAPS
+AuthMechs Login
+
+IMAPStore jp-Remote
+Account JonathanPeel
+
+MaildirStore jp-Maildir
+Path ~/.mail/jp/
+Inbox ~/.mail/jp/Inbox
+SubFolders Verbatim
+
+Channel jonathanpeel
+Far :jp-Remote:
+Near :jp-Maildir:
+Pattern *
+Create Both
+Expunge Both
+SyncState *
