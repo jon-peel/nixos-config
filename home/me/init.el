@@ -636,22 +636,62 @@
 (setq org-latex-hyperref-template 
       "\\hypersetup{\n  colorlinks=true,\n  linkcolor=blue,\n  filecolor=cyan,\n  urlcolor=magenta,\n  citecolor=green\n}")
 
-;(add-to-list 'org-latex-classes
-;             '("article"
-;               "\\documentclass{article}"
-;               ("\\section{%s}" . "\\section*{%s}")
-;               ("\\subsection{%s}" . "\\subsection*{%s}")
-;               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-;               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-;               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))  
-(add-to-list 'org-latex-classes
-             '("koma-article"
-               "\\documentclass{scrartcl}"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(setq org-latex-classes ())
+(add-to-list
+ 'org-latex-classes
+ '("dndbook"
+   "
+\\documentclass[10pt,twoside,twocolumn,openany,print,justified]{dndbook}
+\\usepackage[english]{babel}
+\\usepackage[utf8]{inputenc}
+   "
+   ("\\chapter{%s}" . "\\chapter*{%s}")
+   ("\\section{%s}" . "\\section*{%s}")
+   ("\\subsection{%s}" . "\\subsection*{%s}")
+   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+ ))
+(add-to-list
+ 'org-latex-classes
+ '("rpg-module"
+   "\\RequirePackage{pgfmath}
+    \\documentclass[a4paper,acdesc]{rpg-module}."
+   ("\\part{%s}" . "\\part{%s}")
+   ("\\section{%s}" . "\\section*{%s}")
+   ("\\subsection{%s}" . "\\subsection*{%s}")
+   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+   ))
+(add-to-list
+ 'org-latex-classes
+ '("koma-article"
+   "\\documentclass{scrartcl}"
+   ("\\section{%s}" . "\\section*{%s}")
+   ("\\subsection{%s}" . "\\subsection*{%s}")
+   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+ )
+
+;; Custom LaTeX table export environment
+(with-eval-after-load 'ox-latex
+  (defun my-org-latex-dnd-table (table contents info)
+    "Convert an org table to a DndTable when a special property is set."
+    (let* ((caption (org-export-get-caption table))
+           (caption-str (if caption (format "[header=%s]" 
+                                          (org-export-data caption info))
+                          "[header=Nice Table]"))
+           (attr (org-export-read-attribute :attr_latex table))
+           (spec (or (plist-get attr :spec) "XX")))
+      (format "\\begin{DndTable}%s{%s}\n%s\n\\end{DndTable}"
+              caption-str spec contents)))
+  
+  (defun my-org-latex-table-wrapper (orig-fun table contents info)
+    "Wrapper for org-latex-table that checks for DNDTABLE property."
+    (if (org-export-get-node-property :DNDTABLE table)
+        (my-org-latex-dnd-table table contents info)
+      (funcall orig-fun table contents info)))
+  
+  ;; Add advice to the original function
+  (advice-add 'org-latex-table :around #'my-org-latex-table-wrapper))
 
 (use-package pdf-tools
   :ensure t

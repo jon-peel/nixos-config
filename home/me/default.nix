@@ -99,6 +99,7 @@
 
   # home.file.".emacs.d/init.el".source = ./init.el;
   home.file = {
+    ".config/i3/config_c".source = ./i3-config;
     ".config/isyncrc".source = ./isyncrc;
     
     ".config/onedrive/sync_list".text = ''

@@ -4,12 +4,42 @@ let
   tex = (pkgs.texlive.combine {
     inherit (pkgs.texlive)
       scheme-medium
-      wargame
       alphalph
+      bbding
+      capt-of
+      cfr-initials
+      changepage
+      cm-unicode
+      contour
+      comment
+      csquotes
+      dblfloatfix
+      enumitem
+      fontaxes
+      framed
+      gensymb
+      geometry
+      gillius
+      hang
+      initials
+      keycommand
+      kpfonts
+      lettrine
+      listingsutf8
+      multitoc
+      numprint
+      pdfcol
       pgf
       pgf-blur
+      preprint
+      tcolorbox
+      tikzfill
+      titlesec
+      tocloft
+      wargame
       wrapfig
-      capt-of
+      xstring
+
       
       #ec                # European Computer Modern fonts (for T1 fontenc)
       #metafont          # For font generation
@@ -24,7 +54,6 @@ let
       #titling
       #xcolor
       #titlesec
-      #tcolorbox
       # pgf
       #tikzfill
       #booktabs
