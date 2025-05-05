@@ -33,6 +33,9 @@
       epkgs.lsp-ivy
       epkgs.magit # Git integration
       epkgs.org-bullets
+      epkgs.org-roam
+      epkgs.org-roam-ui
+      epkgs.org-transclusion
       # epkgs.org-habit
       epkgs.which-key # Keybinding suggestions
       epkgs.ivy # Fuzzy completion
@@ -51,6 +54,11 @@
     ];
   };
   
-  home.file.".emacs.d/.keep".text = "";
-  home.file.".emacs.d/init.el".source = ./init.el;
+  home = {
+    file = {
+      ".emacs.d/.keep".text = "";
+      ".emacs.d/init.el".source = ./init.el;
+      ".emacs.d/org-include-generator.el".source = ./org-include-generator.el;
+    };
+  };
 }

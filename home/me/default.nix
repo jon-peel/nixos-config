@@ -220,11 +220,6 @@ AddToMenu MenuFvwmRoot "Root Menu" Title
     EDITOR = "emacs";
   };
 
-  services.davmail = {
-    enable = true;
-  };
-    
-  
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
@@ -286,13 +281,25 @@ AddToMenu MenuFvwmRoot "Root Menu" Title
       }
     ];
   };
-
-
   
+  services.redshift = {
+   enable = true;
+   temperature = {
+     day = 5700;  # More neutral/blue during day
+     night = 2500;  # Warmer/more orange at night
+   };
+   brightness = {
+     day = "1.0";
+     night = "0.8";  # Slightly dimmer at night
+   };
+   # You can set your location manually (latitude:longitude)
+   # Find your coordinates at https://latlong.net/
+   latitude = "43.489298";  # Replace with your latitude
+   longitude = "39.976851";  # Replace with your longitude
   
-  
-  
-  
-  
-  
+   # Or use geoclue2 for automatic location
+   # settings.geoclue2 = {
+   #   enable = true;
+   # };
+  }; 
 }

@@ -9,8 +9,8 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
-      # ./gnome.nix
-      ./i3.nix
+      ./gnome.nix
+      # ./i3.nix
       # ./exwm.nix
       # ./mlvwm.nix
       # ./fvwm.nix
@@ -229,7 +229,8 @@ home-manager = {
     vlc
     wget
     ditaa
-    tex
+     tex
+     killall
   ];
 
 

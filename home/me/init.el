@@ -400,13 +400,20 @@
   :hook (org-mode . my/org-mode-visual-fill))
 
 (setq org-capture-templates
-       '(
-         ;; ("j" "Journal")
-         ;; ("jj" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
-         ;;  "\n\n* %U\n%?")
-         ;; ("jt" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
-         ;;  "* [ ] %?\nSCHEDULED: %t")
-
+      '(
+        ;; ("j" "Journal")
+        ;; ("jj" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
+        ;;  "\n\n* %U\n%?")
+        ;; ("jt" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
+        ;;  "* [ ] %?\nSCHEDULED: %t")
+	
+        ("x" "Export D&D Session")
+	("xd" "Export Dungeon" plain
+         (file+olp "dnd-session.org" "Random Dungeons")
+         "** %f%?\n#+INCLUDE: ./roam/%f"
+	 :immediate-finish t
+	 :jump-to-captured t)
+	
          ("j" "Journal")
          ("jj" "Journal" entry
           (file+olp+datetree "journal.org" "Journal")
@@ -541,6 +548,61 @@
 (setq org-ditaa-jar-path nil)  ;; We're not using the jar directly
 (setq org-babel-ditaa-command "/run/current-system/sw/bin/ditaa")
 
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory "~/OneDrive/org/roam")
+  (org-roam-completion-everywhere t)
+  :config
+  (org-roam-setup))
+
+(setq org-roam-capture-templates
+      '(("d" "default" plain 
+         "%?"
+         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+title: ${title}\n")
+         :unnarrowed t)
+        
+        ("n" "note" plain
+         "* Notes\n%?"
+         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+title: ${title}\n")
+         :unnarrowed t)
+
+
+    ))
+
+(my/leader-keys
+  "n"     '(:ignore t :which-key "org-roam")
+  "nf"    '(org-roam-node-find :which-key "find/create note")
+  "ni"    '(org-roam-node-insert :which-key "insert link")
+  "nc"    '(org-roam-capture :which-key "capture")
+  "nl"    '(org-roam-buffer-toggle :which-key "toggle buffer")
+  "ns"    '(org-roam-db-sync :which-key "sync database")
+  "ng"    '(org-roam-graph :which-key "show graph")
+  
+  ;; Daily notes
+  "nd"    '(:prefix t :which-key "dailies")
+  "ndt"   '(org-roam-dailies-capture-today :which-key "today")
+  "ndp"   '(org-roam-dailies-capture-previous :which-key "previous")
+  "ndn"   '(org-roam-dailies-capture-next :which-key "next")
+  "ndf"   '(org-roam-dailies-find-directory :which-key "find")
+  
+  ;; Tags
+  "nt"    '(:prefix t :which-key "tags")
+  "nta"   '(org-roam-tag-add :which-key "add")
+  "ntr"   '(org-roam-tag-remove :which-key "remove")
+  
+  ;; Quick captures with templates
+  "nq"    '(:prefix t :which-key "quick capture")
+  "nqd"   '((lambda () (interactive) (org-roam-capture nil "d")) :which-key "default")
+  "nqn"   '((lambda () (interactive) (org-roam-capture nil "n")) :which-key "note")
+  
+  ;; Alias section
+  "na"    '(:prefix t :which-key "aliases")
+  "naa"   '(org-roam-alias-add :which-key "add")
+  "nar"   '(org-roam-alias-remove :which-key "remove"))
+
 (use-package dired
       :ensure nil
       :commands (dired dired-jump)
@@ -636,7 +698,7 @@
 (setq org-latex-hyperref-template 
       "\\hypersetup{\n  colorlinks=true,\n  linkcolor=blue,\n  filecolor=cyan,\n  urlcolor=magenta,\n  citecolor=green\n}")
 
-(setq org-latex-classes ())
+;; (setq org-latex-classes ())
 (add-to-list
  'org-latex-classes
  '("dndbook"
@@ -712,13 +774,21 @@
 (sleep-for 2))
 
 (my/leader-keys
-"n"   '(:ignore t :which-key "nix")
-"nh"  '(:prefix t :which-key "home manager")
-"nhs" '(my/run-home-manager-switch :which-key "switch")
-"nhe" '( (lambda()(interactive)(find-file-existing "~/nixos-config/home/me/default.nix")) :which-key "edit")
-"nht" '( (lambda()(interactive)(find-file-existing "~/nixos-config/hosts/tuffy/default.nix")) :which-key "tuffy")
+"x"   '(:ignore t :which-key "nix")
+"xh"  '(:prefix t :which-key "home manager")
+"xhs" '(my/run-home-manager-switch :which-key "switch")
+"xhe" '( (lambda()(interactive)(find-file-existing "~/nixos-config/home/me/default.nix")) :which-key "edit")
+"xht" '( (lambda()(interactive)(find-file-existing "~/nixos-config/hosts/tuffy/default.nix")) :which-key "tuffy"))
 
-)
+;; Add the directory containing org-include-generator-roam.el to load-path
+(add-to-list 'load-path (expand-file-name (file-name-directory user-init-file)))
+
+;; Load the package
+(require 'org-include-generator)
+
+(my/leader-keys
+  "d"    '(:ignore t :which-key "D&D")
+  "di"   '(org-include-generate-from-current :which-key "includes"))
 
 (use-package dashboard
   :ensure t
