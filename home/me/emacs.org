@@ -80,6 +80,8 @@ To tangle ~./emacs.nix~ use <kbd>C-c C-v T</kbd>.
       file = {
         ".emacs.d/.keep".text = "";
         ".emacs.d/init.el".source = ./init.el;
+        ".emacs.d/quotes/meditations.txt".source = ./quotes/meditations.txt;
+        ".emacs.d/quotes/quotes".source = ./quotes/quotes;
         ".emacs.d/code/org-include-generator.el".source = ./org-include-generator.el;
       };
     };
@@ -652,49 +654,92 @@ NOTE: Make sure to configure a GitHub token before using this package!
 #+end_src
 ** Capture
 #+begin_src emacs-lisp
-  (setq org-capture-templates
-        '(("x" "Export D&D Session")
-  	("xd" "Export Dungeon" plain
-  	 (file+olp "dnd-session.org" "Random Dungeons")
-  	 "** %f%?\n#+INCLUDE: ./roam/%f"
-  	 :immediate-finish t
-  	 :jump-to-captured t)
-        
-  	("j" "Journal")
-  	("jj" "Journal" entry
-  	 (file+olp+datetree "journal.org" "Journal")
-  	 "* Entry - %<%H:%M> %U\n\n%?"
-  	 :empty-lines 1
-  	 :kill-buffer t)
-  	("jm" "Morning" entry
-  	 (file+olp+datetree "journal.org" "Journal")
-  	 "* Morning\n** TODO [#0] %t Goals [/]\n*** TODO %?\n** Gratitude\n- %^{gratitude}\n- %^{gratitude}\n- %^{gratitude}\n* Entry - %<%H:%M> %U"
-  	 :prepend t
-  	 :immediate-finish f
-  	 :jump-to-captured f)
-        
-        ("b" "blog-post" entry (file+olp "~/repos/blog-home/blog.org" "blog")
-         "* TODO %^{Title} %^g \n:PROPERTIES:\n:EXPORT_FILE_NAME: %^{Slug}\n:EXPORT_DATE: %T\n:END:\n\n%?"
-         :empty-lines-before 2)
-        
-        ("m" "Email Workflow")
-           ("mf" "Follow Up" entry (file+olp "~/OneDrive/org/mail.org" "Follow Up")
-            "* TODO Follow up with %:fromname on %a\nSCHEDULED:%t\n\n%i")
-           ("mr" "Read Later" entry (file+olp "~/OneDrive/org/mail.org" "Read Later")
-            "* TODO Read %a\nSCHEDULED:%t\n\n%i")
+    (defun my/read-meditations-quotes (author)
+      "Read quotes from ~/.emacs.d/quotes/meditations.txt and return them as a list of tuples.
+    Each tuple contains (AUTHOR QUOTE-TEXT) where AUTHOR is the provided author name
+    and QUOTE-TEXT is the text of a quote from the file."
+      (let ((quotes-file "~/.emacs.d/quotes/meditations.txt")
+            (quotes-list nil))
+        (when (file-exists-p quotes-file)
+          (with-temp-buffer
+            (insert-file-contents quotes-file)
+            (let ((quote-texts (split-string (buffer-string) "\n\n" t)))
+              (dolist (quote-text quote-texts)
+                ;; Clean up whitespace and add to the list as (author quote) tuple
+                (let ((cleaned-quote (string-trim quote-text)))
+                  (push (list author cleaned-quote) quotes-list))))))
+        (nreverse quotes-list))) ; Return the list in the original order
 
-           ("s" "Sleep Entry" table-line
-            (file+headline "sleep.org" "Data")
-            "| |%^{Date}u|%^{Move (kcal)}|%^{Exercise (min)}|%^{Caffeine (mg)}|%^{Tim in daylight (min)}|%^{Time in bed}|%^{Time out of bed}|%^{Sleep Duration (h:mm)}||%^{Tags}g|"
-            :immediate-finish t :jump-to-captured t)
+    (defun my/random-meditation-quote ()
+      (let ((quotes (my/read-meditations-quotes "Marcus Aurelius")))
+        (if (null quotes)
+            nil  ; Return nil if no quotes are found
+          (nth (random (length quotes)) quotes))))
 
-           ("t" "Task" entry
-            (file+headline "tasks.org" "Tasks")
-            "** TODO %? %^g\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)
-           
-           ("T" "Task with Deadline" entry
-            (file+headline "tasks.org" "Tasks")
-            "** TODO %?  %^g\nDEADLINE: %^t\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)))
+  (defun my/org-quote-meditation ()
+    "Insert a random meditation quote formatted as an org-mode quote block.
+  The quote will be formatted as:
+  ,#+BEGIN_QUOTE
+  Quote text goes here
+  --- Author
+  ,#+END_QUOTE"
+    (interactive)
+    (let* ((quote-tuple (my/random-meditation-quote))
+           (author (car quote-tuple))
+           (quote-text (cadr quote-tuple)))
+      (if quote-tuple
+          (format "#+BEGIN_QUOTE\n%s\n    ---%s\n#+END_QUOTE" 
+                          quote-text author)
+        (message "No meditation quotes found"))))
+
+;; (my/org-quote-meditation)
+#+end_src
+
+#+begin_src emacs-lisp
+    (setq org-capture-templates
+          '(("x" "Export D&D Session")
+    	("xd" "Export Dungeon" plain
+    	 (file+olp "dnd-session.org" "Random Dungeons")
+    	 "** %f%?\n#+INCLUDE: ./roam/%f"
+    	 :immediate-finish t
+    	 :jump-to-captured t)
+          
+    	("j" "Journal")
+    	("jj" "Journal" entry
+    	 (file+olp+datetree "journal.org" "Journal")
+    	 "* Entry - %<%H:%M> %U\n\n%?"
+    	 :empty-lines 1
+    	 :kill-buffer t)
+    	("jm" "Morning" plain
+    	 (file+olp+datetree "journal.org" "Journal")
+    	 "\n%(my/org-quote-meditation)"
+    	 :prepend t
+    	 :immediate-finish t
+    	 :jump-to-captured t
+  	 )
+          
+          ("b" "blog-post" entry (file+olp "~/repos/blog-home/blog.org" "blog")
+           "* TODO %^{Title} %^g \n:PROPERTIES:\n:EXPORT_FILE_NAME: %^{Slug}\n:EXPORT_DATE: %T\n:END:\n\n%?"
+           :empty-lines-before 2)
+          
+          ("m" "Email Workflow")
+             ("mf" "Follow Up" entry (file+olp "~/OneDrive/org/mail.org" "Follow Up")
+              "* TODO Follow up with %:fromname on %a\nSCHEDULED:%t\n\n%i")
+             ("mr" "Read Later" entry (file+olp "~/OneDrive/org/mail.org" "Read Later")
+              "* TODO Read %a\nSCHEDULED:%t\n\n%i")
+
+             ("s" "Sleep Entry" table-line
+              (file+headline "sleep.org" "Data")
+              "| |%^{Date}u|%^{Move (kcal)}|%^{Exercise (min)}|%^{Caffeine (mg)}|%^{Tim in daylight (min)}|%^{Time in bed}|%^{Time out of bed}|%^{Sleep Duration (h:mm)}||%^{Tags}g|"
+              :immediate-finish t :jump-to-captured t)
+
+             ("t" "Task" entry
+              (file+headline "tasks.org" "Tasks")
+              "** TODO %? %^g\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)
+             
+             ("T" "Task with Deadline" entry
+              (file+headline "tasks.org" "Tasks")
+              "** TODO %?  %^g\nDEADLINE: %^t\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)))
 #+end_src
 
 #+RESULTS:

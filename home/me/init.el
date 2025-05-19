@@ -400,6 +400,46 @@
 (use-package visual-fill-column
   :hook (org-mode . my/org-mode-visual-fill))
 
+(defun my/read-meditations-quotes (author)
+      "Read quotes from ~/.emacs.d/quotes/meditations.txt and return them as a list of tuples.
+    Each tuple contains (AUTHOR QUOTE-TEXT) where AUTHOR is the provided author name
+    and QUOTE-TEXT is the text of a quote from the file."
+      (let ((quotes-file "~/.emacs.d/quotes/meditations.txt")
+            (quotes-list nil))
+        (when (file-exists-p quotes-file)
+          (with-temp-buffer
+            (insert-file-contents quotes-file)
+            (let ((quote-texts (split-string (buffer-string) "\n\n" t)))
+              (dolist (quote-text quote-texts)
+                ;; Clean up whitespace and add to the list as (author quote) tuple
+                (let ((cleaned-quote (string-trim quote-text)))
+                  (push (list author cleaned-quote) quotes-list))))))
+        (nreverse quotes-list))) ; Return the list in the original order
+
+    (defun my/random-meditation-quote ()
+      (let ((quotes (my/read-meditations-quotes "Marcus Aurelius")))
+        (if (null quotes)
+            nil  ; Return nil if no quotes are found
+          (nth (random (length quotes)) quotes))))
+
+  (defun my/org-quote-meditation ()
+    "Insert a random meditation quote formatted as an org-mode quote block.
+  The quote will be formatted as:
+  #+BEGIN_QUOTE
+  Quote text goes here
+  --- Author
+  #+END_QUOTE"
+    (interactive)
+    (let* ((quote-tuple (my/random-meditation-quote))
+           (author (car quote-tuple))
+           (quote-text (cadr quote-tuple)))
+      (if quote-tuple
+          (format "#+BEGIN_QUOTE\n%s\n    ---%s\n#+END_QUOTE" 
+                          quote-text author)
+        (message "No meditation quotes found"))))
+
+;; (my/org-quote-meditation)
+
 (setq org-capture-templates
       '(("x" "Export D&D Session")
 	("xd" "Export Dungeon" plain
@@ -414,12 +454,13 @@
 	 "* Entry - %<%H:%M> %U\n\n%?"
 	 :empty-lines 1
 	 :kill-buffer t)
-	("jm" "Morning" entry
+	("jm" "Morning" plain
 	 (file+olp+datetree "journal.org" "Journal")
-	 "* Morning\n** TODO [#0] %t Goals [/]\n*** TODO %?\n** Gratitude\n- %^{gratitude}\n- %^{gratitude}\n- %^{gratitude}\n* Entry - %<%H:%M> %U"
+	 "\n%(my/org-quote-meditation)"
 	 :prepend t
-	 :immediate-finish f
-	 :jump-to-captured f)
+	 :immediate-finish t
+	 :jump-to-captured t
+	 )
       
       ("b" "blog-post" entry (file+olp "~/repos/blog-home/blog.org" "blog")
        "* TODO %^{Title} %^g \n:PROPERTIES:\n:EXPORT_FILE_NAME: %^{Slug}\n:EXPORT_DATE: %T\n:END:\n\n%?"
