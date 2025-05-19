@@ -400,45 +400,51 @@
 (use-package visual-fill-column
   :hook (org-mode . my/org-mode-visual-fill))
 
-(defun my/read-meditations-quotes (author)
-      "Read quotes from ~/.emacs.d/quotes/meditations.txt and return them as a list of tuples.
-    Each tuple contains (AUTHOR QUOTE-TEXT) where AUTHOR is the provided author name
-    and QUOTE-TEXT is the text of a quote from the file."
-      (let ((quotes-file "~/.emacs.d/quotes/meditations.txt")
-            (quotes-list nil))
-        (when (file-exists-p quotes-file)
-          (with-temp-buffer
-            (insert-file-contents quotes-file)
-            (let ((quote-texts (split-string (buffer-string) "\n\n" t)))
-              (dolist (quote-text quote-texts)
-                ;; Clean up whitespace and add to the list as (author quote) tuple
-                (let ((cleaned-quote (string-trim quote-text)))
-                  (push (list author cleaned-quote) quotes-list))))))
-        (nreverse quotes-list))) ; Return the list in the original order
+(defun my/read-quotes ()
+  "Read quotes from ~/.emacs.d/quotes/quotes and return them as a list of tuples.
+  Each tuple contains (QUOTE AUTHOR SOURCE).
+  Skips the first quote block (which is used as a template)."
+  (let ((quotes-file "~/.emacs.d/quotes/quotes")
+        (quotes-list nil))
+    (when (file-exists-p quotes-file)
+      (with-temp-buffer
+        (insert-file-contents quotes-file)
+        (let ((quote-blocks (split-string (buffer-string) "\n\n" t)))
+          ;; Skip the first block (template) and process the rest
+          (dolist (block (cdr quote-blocks))
+            (let* ((lines (split-string block "\n" t))
+                   ;; Extract the three components (quote, author, source)
+                   (quote-text (string-trim (or (nth 0 lines) "")))
+                   (author (string-trim (or (nth 1 lines) "")))
+                   (source (string-trim (or (nth 2 lines) ""))))
+              ;; Only add complete quotes to the list
+              (when (and (not (string-empty-p quote-text))
+                         (not (string-empty-p author)))
+                (push (list quote-text author source) quotes-list)))))))
+    (nreverse quotes-list))) ; Return the list in the original order
 
-    (defun my/random-meditation-quote ()
-      (let ((quotes (my/read-meditations-quotes "Marcus Aurelius")))
-        (if (null quotes)
-            nil  ; Return nil if no quotes are found
-          (nth (random (length quotes)) quotes))))
+(defun my/random-quote ()
+  "Return a random quote as a tuple (QUOTE AUTHOR SOURCE)."
+  (let ((quotes (my/read-quotes)))
+    (if (null quotes)
+        nil  ; Return nil if no quotes are found
+      (nth (random (length quotes)) quotes))))
 
-  (defun my/org-quote-meditation ()
-    "Insert a random meditation quote formatted as an org-mode quote block.
-  The quote will be formatted as:
-  #+BEGIN_QUOTE
-  Quote text goes here
-  --- Author
-  #+END_QUOTE"
-    (interactive)
-    (let* ((quote-tuple (my/random-meditation-quote))
-           (author (car quote-tuple))
-           (quote-text (cadr quote-tuple)))
-      (if quote-tuple
-          (format "#+BEGIN_QUOTE\n%s\n    ---%s\n#+END_QUOTE" 
-                          quote-text author)
-        (message "No meditation quotes found"))))
+(defun my/get-quote-string ()
+  "Return a random quote formatted as an org-mode quote block for use in templates."
+  (let* ((quote-tuple (my/random-quote))
+         (quote-text (nth 0 quote-tuple))
+         (author (nth 1 quote-tuple))
+         (source (nth 2 quote-tuple))
+         (attribution (if (string-empty-p source)
+                          (format "--- %s" author)
+                        (format "--- %s, %s" author source))))
+    (if quote-tuple
+        (format "#+BEGIN_QUOTE\n%s\n%s\n#+END_QUOTE" 
+                quote-text attribution)
+      "No quotes found")))
 
-;; (my/org-quote-meditation)
+;; (my/get-quote-string)
 
 (setq org-capture-templates
       '(("x" "Export D&D Session")
@@ -456,8 +462,9 @@
 	 :kill-buffer t)
 	("jm" "Morning" plain
 	 (file+olp+datetree "journal.org" "Journal")
-	 "\n%(my/org-quote-meditation)"
+	 "%(my/get-quote-string)"	
 	 :prepend t
+	 :empty-lines 1
 	 :immediate-finish t
 	 :jump-to-captured t
 	 )
