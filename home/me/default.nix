@@ -26,7 +26,7 @@
   # environment.
   home.packages = with pkgs; [
     isync
-    
+    pandoc   
       firefox
       jetbrains-toolbox
       nvtopPackages.full	
@@ -66,7 +66,7 @@
     thefuck # that corrects errors in previous console commands.
       zsh-powerlevel10k
       remmina
-
+mudlet
 
       
     # Fun

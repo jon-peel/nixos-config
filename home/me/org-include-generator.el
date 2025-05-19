@@ -1,13 +1,3 @@
-;;; org-include-generator-roam.el --- Generate includes from org-mode and org-roam links
-
-;;; Commentary:
-;; This script traverses org-mode files starting from the current buffer,
-;; following both standard org links and org-roam ID links, and generating
-;; #+INCLUDE statements based on file tags.
-;; Each file is included only once, even if referenced multiple times.
-
-;;; Code:
-
 (require 'org)
 (require 'cl-lib)
 
@@ -15,35 +5,19 @@
 (when (require 'org-roam nil 'noerror)
   (message "Org-roam support enabled"))
 
-(defvar org-include-tag-headers
-  '(("npc" . "NPCs")
-    ("town" . "Cities & Towns")
-    ("fort" . "Forts")
-    ("dungeon" . "Dungeons")
-    ("item" . "Items"))
-  "Mapping from file tags to header names.")
-
 (defvar org-include-default-header "Other"
-  "Default header for files without matching tags.")
+  "Default header for files without a title.")
 
-(defun org-include-get-filetags (file)
-  "Extract FILETAGS from FILE."
+(defun org-include-get-file-title (file)
+  "Extract the #+TITLE from FILE.
+Returns the title or the filename if no title is found."
   (with-temp-buffer
     (insert-file-contents file)
     (goto-char (point-min))
-    (let ((tags nil))
-      (when (re-search-forward "^#\\+FILETAGS:\\s-*:\\([^:]+\\):" nil t)
-        (setq tags (split-string (match-string 1) ":" t)))
-      tags)))
-
-(defun org-include-get-matching-header (tags)
-  "Find matching header for TAGS based on tag-header mapping."
-  (let ((header org-include-default-header))
-    (cl-loop for tag in tags
-             for header-pair = (assoc tag org-include-tag-headers)
-             when header-pair
-             return (cdr header-pair)
-             finally return header)))
+    (if (re-search-forward "^#\\+TITLE:\\s-*\\(.+\\)$" nil t)
+        (string-trim (match-string 1))
+      ;; If no title found, use the filename without extension
+      (file-name-base file))))
 
 (defun org-include-resolve-id-link (id)
   "Resolve an org-roam ID link to a file path.
@@ -115,21 +89,22 @@ Returns nil if ID cannot be resolved or org-roam is not available."
     (goto-char (point-min))
     (re-search-forward (format "^\\* %s$" (regexp-quote header)) nil t)
     (end-of-line)
-    ;; Use relative path for the include
+    ;; Use relative path for the include and add only-contents parameter
     (let ((relative-file (file-relative-name file (file-name-directory buffer-file-name))))
-      (insert (format "\n#+INCLUDE: \"%s\"" relative-file)))))
+      (insert (format "\n#+INCLUDE: \"%s\" :only-contents t" relative-file)))))
 
 (defun org-include-file-already-included-p (file)
   "Check if FILE is already included in current buffer."
   (save-excursion
     (goto-char (point-min))
     (let ((relative-file (file-relative-name file (file-name-directory buffer-file-name))))
-      (re-search-forward (format "^#\\+INCLUDE: \"%s\"" 
+      (re-search-forward (format "^#\\+INCLUDE: \"%s\" :only-contents t" 
                                  (regexp-quote relative-file)) 
                          nil t))))
 
 (defun org-include-traverse-links-and-include (start-file)
-  "Traverse links in START-FILE and include all connected files."
+  "Traverse links in START-FILE and include all connected files.
+Each file will be included under its own header based on its #+TITLE."
   (let ((visited-files (list (expand-file-name start-file)))
         (files-to-process (list (expand-file-name start-file)))
         (headers-for-files '()))
@@ -143,10 +118,9 @@ Returns nil if ID cannot be resolved or org-roam is not available."
             (unless (member link visited-files)
               (push link visited-files)
               (push link files-to-process)
-              ;; Store the file and its appropriate header
-              (let* ((tags (org-include-get-filetags link))
-                     (header (org-include-get-matching-header tags)))
-                (push (cons link header) headers-for-files)))))))
+              ;; Store the file and its title as header
+              (let ((title (org-include-get-file-title link)))
+                (push (cons link title) headers-for-files)))))))
     
     ;; Add includes for all files (except the start file itself)
     (setq headers-for-files (reverse headers-for-files))
@@ -166,5 +140,4 @@ Returns nil if ID cannot be resolved or org-roam is not available."
     (org-include-traverse-links-and-include buffer-file-name)
     (message "Generated includes from linked files.")))
 
-(provide 'org-include-generator-roam)
-;;; org-include-generator-roam.el ends here
+(provide 'org-include-generator)

@@ -343,6 +343,7 @@
 (setq org-directory "~/OneDrive/org/")
 (setq org-agenda-files '("~/OneDrive/org/tasks.org"
 			 "~/OneDrive/org/shed.org"
+			 "~/OneDrive/org/journal.org"
                          "~/OneDrive/org/anniversaries.org"))
 
 (my/leader-keys
@@ -400,56 +401,90 @@
   :hook (org-mode . my/org-mode-visual-fill))
 
 (setq org-capture-templates
-      '(
-        ;; ("j" "Journal")
-        ;; ("jj" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
-        ;;  "\n\n* %U\n%?")
-        ;; ("jt" "journal" entry (file+datetree "~/OneDrive/org/journal.org")
-        ;;  "* [ ] %?\nSCHEDULED: %t")
-	
-        ("x" "Export D&D Session")
+      '(("x" "Export D&D Session")
 	("xd" "Export Dungeon" plain
-         (file+olp "dnd-session.org" "Random Dungeons")
-         "** %f%?\n#+INCLUDE: ./roam/%f"
+	 (file+olp "dnd-session.org" "Random Dungeons")
+	 "** %f%?\n#+INCLUDE: ./roam/%f"
 	 :immediate-finish t
 	 :jump-to-captured t)
-	
-         ("j" "Journal")
-         ("jj" "Journal" entry
-          (file+olp+datetree "journal.org" "Journal")
-          "* Entry - %<%H:%M>\n%U\n\n%?"
-          :empty-lines 1
- 	 :kill-buffer t)
-         ("jg" "Goals" entry
-          (file+olp+datetree "journal.org" "Journal")
-          "* TODO Goals - %<%d %B %Y> [/]\nSCHEDULED: %t\n** [ ] %?"
-          :prepend t)
-
-         ("b" "blog-post" entry (file+olp "~/repos/blog-home/blog.org" "blog")
-          "* TODO %^{Title} %^g \n:PROPERTIES:\n:EXPORT_FILE_NAME: %^{Slug}\n:EXPORT_DATE: %T\n:END:\n\n%?"
-          :empty-lines-before 2)
-
-         ("m" "Email Workflow")
+      
+	("j" "Journal")
+	("jj" "Journal" entry
+	 (file+olp+datetree "journal.org" "Journal")
+	 "* Entry - %<%H:%M> %U\n\n%?"
+	 :empty-lines 1
+	 :kill-buffer t)
+	("jm" "Morning" entry
+	 (file+olp+datetree "journal.org" "Journal")
+	 "* Morning\n** TODO [#0] %t Goals [/]\n*** TODO %?\n** Gratitude\n- %^{gratitude}\n- %^{gratitude}\n- %^{gratitude}\n* Entry - %<%H:%M> %U"
+	 :prepend t
+	 :immediate-finish f
+	 :jump-to-captured f)
+      
+      ("b" "blog-post" entry (file+olp "~/repos/blog-home/blog.org" "blog")
+       "* TODO %^{Title} %^g \n:PROPERTIES:\n:EXPORT_FILE_NAME: %^{Slug}\n:EXPORT_DATE: %T\n:END:\n\n%?"
+       :empty-lines-before 2)
+      
+      ("m" "Email Workflow")
          ("mf" "Follow Up" entry (file+olp "~/OneDrive/org/mail.org" "Follow Up")
           "* TODO Follow up with %:fromname on %a\nSCHEDULED:%t\n\n%i")
          ("mr" "Read Later" entry (file+olp "~/OneDrive/org/mail.org" "Read Later")
           "* TODO Read %a\nSCHEDULED:%t\n\n%i")
 
-       ("s" "Sleep Entry" table-line
+         ("s" "Sleep Entry" table-line
           (file+headline "sleep.org" "Data")
           "| |%^{Date}u|%^{Move (kcal)}|%^{Exercise (min)}|%^{Caffeine (mg)}|%^{Tim in daylight (min)}|%^{Time in bed}|%^{Time out of bed}|%^{Sleep Duration (h:mm)}||%^{Tags}g|"
-          :immediate-finish t :jump-to-captured t
-          )
+          :immediate-finish t :jump-to-captured t)
 
          ("t" "Task" entry
           (file+headline "tasks.org" "Tasks")
           "** TODO %? %^g\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)
-
+         
          ("T" "Task with Deadline" entry
           (file+headline "tasks.org" "Tasks")
-          "** TODO %?  %^g\nDEADLINE: %^t\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)
+          "** TODO %?  %^g\nDEADLINE: %^t\n:PROPERTIES:\n:CREATED: %U\n:END:\n" :empty-lines 1)))
 
-         ))
+(setq dnd-org-dir "~/OneDrive/org/roam/dnd/")
+(setq dnd-out-dir "~/Documents/dnd-session")
+(setq org-publish-project-alist
+      `(
+  	("dnd-campaign"
+         :base-directory ,dnd-org-dir
+         :base-extension "org"
+         :publishing-directory ,dnd-out-dir
+         :recursive t
+         :publishing-function org-html-publish-to-html
+         :html-doctype "html5"
+         :html-html5-fancy t
+         :with-toc t
+         :section-numbers nil
+         :html-head "<link rel=\"stylesheet\" href=\"./dnd-theme.css\" type=\"text/css\"/>
+                     <link href=\"https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap\"
+                           rel=\"stylesheet\">
+       <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css\"
+             rel=\"stylesheet\">"
+         :html-preamble "<div class='campaign-header'>Home Brew Campaign</div>
+                        <div class='nav-menu'>
+                          <a href='index.html'>Home</a> |
+                          <a href='random_locations_and_encounters.html'>Random</a>
+                        </div>"
+         :html-postamble "<div class='footer'>Campaign notes prepared by %a</div>"
+         :auto-sitemap t
+         :sitemap-title "D&D Campaign Index"
+         :sitemap-filename "index.org"
+         :sitemap-sort-files anti-chronologically
+         )
+        
+        ("dnd-static"
+         :base-directory ,dnd-org-dir
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|map"
+         :publishing-directory ,dnd-out-dir
+         :recursive t
+         :publishing-function org-publish-attachment
+         )
+        
+        ("dnd-website" :components ("dnd-campaign" "dnd-static"))
+ 	))
 
 (require 'org-tempo)
    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
@@ -528,6 +563,7 @@
  'org-babel-load-languages
  '((ditaa . t) 
    (emacs-lisp . t)
+   (gnuplot . t)
    (python . t)
    (shell . t)))
 
@@ -557,20 +593,18 @@
   (org-roam-setup))
 
 (setq org-roam-capture-templates
-      '(("d" "default" plain 
-         "%?"
-         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                            "#+title: ${title}\n")
+      '(("d" "D&D")
+	("dn" "new" plain 
+         "#+FILETAGS: %^{Tags}g\n\n* ${title}\n%?"
+         :target (file+head "dnd/${slug}.org" "#+TITLE: ${title}\n")
+	 :immediate-finish t :jump-to-captured t
          :unnarrowed t)
         
         ("n" "note" plain
          "* Notes\n%?"
          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
                             "#+title: ${title}\n")
-         :unnarrowed t)
-
-
-    ))
+         :unnarrowed t)))
 
 (my/leader-keys
   "n"     '(:ignore t :which-key "org-roam")
@@ -602,6 +636,8 @@
   "na"    '(:prefix t :which-key "aliases")
   "naa"   '(org-roam-alias-add :which-key "add")
   "nar"   '(org-roam-alias-remove :which-key "remove"))
+
+(setq dired-dwim-target t)
 
 (use-package dired
       :ensure nil
@@ -780,8 +816,8 @@
 "xhe" '( (lambda()(interactive)(find-file-existing "~/nixos-config/home/me/default.nix")) :which-key "edit")
 "xht" '( (lambda()(interactive)(find-file-existing "~/nixos-config/hosts/tuffy/default.nix")) :which-key "tuffy"))
 
-;; Add the directory containing org-include-generator-roam.el to load-path
-(add-to-list 'load-path (expand-file-name (file-name-directory user-init-file)))
+;; Add the 'code' subdirectory containing org-include-generator.el to load-path
+(add-to-list 'load-path (expand-file-name "code" (file-name-directory user-init-file)))
 
 ;; Load the package
 (require 'org-include-generator)

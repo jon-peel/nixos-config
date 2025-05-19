@@ -9,7 +9,8 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
-      ./gnome.nix
+      # ./gnome.nix
+      ./xfce.nix
       # ./i3.nix
       # ./exwm.nix
       # ./mlvwm.nix

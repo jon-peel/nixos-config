@@ -11,6 +11,7 @@
       epkgs.doom-modeline
       epkgs.doom-themes
   	  epkgs.nix-mode
+  	  epkgs.gnuplot
       # epkgs.forge
       epkgs.fsharp-mode
       epkgs.general
@@ -58,7 +59,7 @@
     file = {
       ".emacs.d/.keep".text = "";
       ".emacs.d/init.el".source = ./init.el;
-      ".emacs.d/org-include-generator.el".source = ./org-include-generator.el;
+      ".emacs.d/code/org-include-generator.el".source = ./org-include-generator.el;
     };
   };
 }
