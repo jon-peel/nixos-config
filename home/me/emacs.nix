@@ -59,6 +59,7 @@
     file = {
       ".emacs.d/.keep".text = "";
       ".emacs.d/init.el".source = ./init.el;
+      ".emacs.d/quotes/meditations.txt".source = ./quotes/meditations.txt;
       ".emacs.d/code/org-include-generator.el".source = ./org-include-generator.el;
     };
   };
