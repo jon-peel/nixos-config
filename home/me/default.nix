@@ -289,8 +289,10 @@ AddToMenu MenuFvwmRoot "Root Menu" Title
      night = 2500;  # Warmer/more orange at night
    };
    settings = {
+   redshift = {
      brightness-day = "1.0";
      brightness-night = "0.8";
+   };
    };
    # You can set your location manually (latitude:longitude)
    # Find your coordinates at https://latlong.net/
