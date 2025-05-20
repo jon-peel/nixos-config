@@ -288,9 +288,9 @@ AddToMenu MenuFvwmRoot "Root Menu" Title
      day = 5700;  # More neutral/blue during day
      night = 2500;  # Warmer/more orange at night
    };
-   brightness = {
-     day = "1.0";
-     night = "0.8";  # Slightly dimmer at night
+   settings = {
+     brightness-day = "1.0";
+     brightness-night = "0.8";
    };
    # You can set your location manually (latitude:longitude)
    # Find your coordinates at https://latlong.net/
