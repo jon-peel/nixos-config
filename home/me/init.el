@@ -437,8 +437,8 @@
          (author (nth 1 quote-tuple))
          (source (nth 2 quote-tuple))
          (attribution (if (string-empty-p source)
-                          (format "--- %s" author)
-                        (format "--- %s, %s" author source))))
+                          (format "    --- %s" author)
+                        (format "    --- %s, %s" author source))))
     (if quote-tuple
         (format "#+BEGIN_QUOTE\n%s\n%s\n#+END_QUOTE" 
                 quote-text attribution)
@@ -457,7 +457,7 @@
 	("j" "Journal")
 	("jj" "Journal" entry
 	 (file+olp+datetree "journal.org" "Journal")
-	 "* Entry - %<%H:%M> %U\n\n%?"
+	 "* Entry - %<%H:%M> %U\n%?"
 	 :empty-lines 1
 	 :kill-buffer t)
 	("jm" "Morning" plain

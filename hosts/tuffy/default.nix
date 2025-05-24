@@ -212,6 +212,7 @@ home-manager = {
   # $ nix search wget
 
   environment.systemPackages = with pkgs; [
+      icu
      font-awesome
      material-icons
      material-design-icons
@@ -220,7 +221,6 @@ home-manager = {
      nerd-fonts.jetbrains-mono
      emacs-all-the-icons-fonts
 
-    jetbrains.rider
     # (jetbrains.plugins.addPlugins jetbrains.rider ["github-copilot"])
     distrobox
     home-manager

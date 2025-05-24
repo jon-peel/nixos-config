@@ -9,14 +9,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    eyeBrowse = {
-      url = "path:/home/me/nixos-config/programs/EyeBrowse";
-      inputs.nixpkgs.follows = "nixpkgs"; # Share the nixpkgs input
-    };
+    # eyeBrowse = {
+    #  url = "path:/home/me/nixos-config/programs/EyeBrowse";
+    #  inputs.nixpkgs.follows = "nixpkgs"; # Share the nixpkgs input
+    #};
   };
 
   
-  outputs = { self, nixpkgs, home-manager, eyeBrowse, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     
     nixpkgs.overlays = [ (import self.inputs.emacs-overlay) ];
     
@@ -29,7 +29,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.me = import ./home/me;
+          #  home-manager.users.me = import ./home/me;
           }
         ];
         specialArgs = { inherit inputs; };

@@ -2,7 +2,8 @@
 
 {  imports = [
    # ./mailboxs.nix
-    ./emacs.nix
+   # ./emacs.nix
+    ./doom-emacs.nix
     ./vscode.nix
   ];
 
@@ -25,10 +26,10 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
+    jetbrains.rider
     isync
     pandoc   
       firefox
-      jetbrains-toolbox
       nvtopPackages.full	
       tree
       gnuplot 
