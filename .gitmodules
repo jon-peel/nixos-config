@@ -1,3 +1,6 @@
 [submodule "home/me/DND-5e-LaTeX-Template"]
 	path = home/me/DND-5e-LaTeX-Template
 	url = https://github.com/rpgtex/DND-5e-LaTeX-Template.git
+[submodule "home/me/emacs"]
+	path = home/me/emacs
+	url = https://github.com/doomemacs/doomemacs
