@@ -4,8 +4,11 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
+  programs.thunar.enable = true;
+
   environment.systemPackages = with pkgs; [
     gnomeExtensions.appindicator
+    gnome-tweaks
     gdm-settings
     ghostty
   ];
@@ -32,7 +35,8 @@
     hitori # sudoku game
     iagno # go game
     tali # poker game
+    nautilus
     # totem # video player
   ]);
-  
+
 }

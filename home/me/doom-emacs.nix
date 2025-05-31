@@ -3,7 +3,7 @@
   
   home = {
     file = {
-      ".config/emacs" = { source = ./doom-emacs/repo; recursive = true; };
+      #".config/emacs" = { source = ./doom-emacs/repo; recursive = true; };
       #".emacs.d/.keep".text = "";
       #".emacs.d/init.el".source = ./init.el;
       #".emacs.d/quotes/meditations.txt".source = ./quotes/meditations.txt;

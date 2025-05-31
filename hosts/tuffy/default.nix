@@ -9,7 +9,8 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
-      ./gnome.nix
+      #./gnome.nix
+      ./qtile.nix
       # ./xfce.nix
       # ./i3.nix
       # ./exwm.nix
@@ -38,12 +39,14 @@ in {
       theme = "breeze";
       # Available themes: bgrt, breeze, charge, fade-in, glow, script, solar, spinfinity, spinner
     };
+    kernelModules = ["snd_hda_intel"];
     # Make sure kernel supports splash
     kernelParams = [ "quiet" "splash" "rd.systemd.show_status=false" "rd.udev.log_level=3" "vt.global_cursor_default=0"
                        "intel_pstate=active" # For Intel CPUs
                        "pcie_aspm=force"
                        "transparent_hugepage=always"
                        "usbcore.autosuspend=1"
+                       "snd-intel-dspcfg.dsp_driver=1"
                    ];
   };
 
@@ -144,10 +147,10 @@ in {
     package = config.boot.kernelPackages.nvidiaPackages.stable;
 
     prime = {
-      offload = {
-        enable = true;
-        enableOffloadCmd = true;
-      };
+      #offload = {
+      #  enable = true;
+      #  enableOffloadCmd = true;
+      #};
       intelBusId = "PCI:0:2:0";
       nvidiaBusId = "PCI:01:0:0";
     };
@@ -159,13 +162,17 @@ in {
   services.printing.enable = true;
   services.printing.drivers = with pkgs; [ gutenprint canon-cups-ufr2 cups-filters cnijfilter2 canon-capt cups-bjnp carps-cups ];
 
+  security.rtkit.enable = true;
   # Enable sound.
-  # hardware.pulseaudio.enable = true;
+  #hardware.pulseaudio.enable = true;
   # OR
-  # services.pipewire = {
-  #  enable = true;
-  #  pulse.enable = true;
-  #};
+ services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    #alsa.support32Bit = true;
+    pulse.enable = true;
+    #jack.enable = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
@@ -212,8 +219,11 @@ home-manager = {
   # $ nix search wget
 
   environment.systemPackages = with pkgs; [
+    pamixer
+    pavucontrol
       icu
      font-awesome
+	fsharp
      material-icons
      material-design-icons
      nerd-fonts.fira-code
