@@ -15,6 +15,15 @@ in
     };
   };
 
+  dconf.enable = true;
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Adwaita";
+      package = pkgs.gnome-themes-extra;
+    };
+  };
+
   wayland.windowManager.sway = {
     enable = true;
     wrapperFeatures.gtk = true; # Fixes common issues with GTK 3 apps
@@ -49,6 +58,7 @@ in
           "${modifier}+d" = "exec wofi --show drun";
 
           # Brightness
+          "${modifier}+Shift+t" = "exec ${theme-toggle}/bin/theme-toggle toggle";
           "XF86MonBrightnessDown" = "exec light -U 10";
           "XF86MonBrightnessUp" = "exec light -A 10";
 
@@ -112,6 +122,58 @@ programs.i3status-rust = {
     };
   };
 
+  systemd.user = {
+    services = {
+      theme-morning = {
+        Unit = {
+          Description = "Set light theme in the morning";
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${theme-toggle}/bin/theme-toggle light";
+        };
+      };
+
+      theme-evening = {
+        Unit = {
+          Description = "Set dark theme in the evening";
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${theme-toggle}/bin/theme-toggle dark";
+        };
+      };
+    };
+
+    timers = {
+      theme-morning = {
+        Unit = {
+          Description = "Morning theme timer";
+        };
+        Timer = {
+          OnCalendar = "*-*-* 08:00:00";
+          Persistent = true;
+        };
+        Install = {
+          WantedBy = [ "timers.target" ];
+        };
+      };
+
+      theme-evening = {
+        Unit = {
+          Description = "Evening theme timer";
+        };
+        Timer = {
+          OnCalendar = "*-*-* 17:00:00";
+          Persistent = true;
+        };
+        Install = {
+          WantedBy = [ "timers.target" ];
+        };
+      };
+    };
+  };
+
   home.packages = with pkgs; [
     theme-toggle
     light
@@ -131,6 +193,11 @@ programs.i3status-rust = {
     nerd-fonts.fira-code
     unrar
     unzip
+
+    #for theme toggle
+    glib  # Provides gsettings
+    gsettings-desktop-schemas  # Provides the schemas gsettings needs
+    dconf  # Backend for gsettings
   ];
 
 }
