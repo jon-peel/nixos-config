@@ -72,7 +72,7 @@
     gitAndTools.gh
     github-cli
       # dotnet-sdk_9
-      dotnet-sdk_10
+      # dotnet-sdk_10
       #  dotnet-sdk_8
       mono
     fsautocomplete

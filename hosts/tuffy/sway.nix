@@ -1,20 +1,36 @@
 { pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
-    grim # screenshot functionality
-    slurp # screenshot functionality
-    wl-clipboard # wl-copy and wl-paste for copy/paste from stdin / stdout
-    mako # notification system developed by swaywm maintainer
-  ];
+  # kanshi systemd service
+  systemd.user.services.kanshi = {
+    description = "kanshi daemon";
+    environment = {
+      WAYLAND_DISPLAY="wayland-1";
+      DISPLAY = ":0";
+    };
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = ''${pkgs.kanshi}/bin/kanshi -c kanshi_config_file'';
+    };
+  };
 
-  # Enable the gnome-keyring secrets vault.
-  # Will be exposed through DBus to programs willing to store secrets.
-  services.gnome.gnome-keyring.enable = true;
-
-  # enable Sway window manager
-  programs.sway = {
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+  services.greetd = {
     enable = true;
-    wrapperFeatures.gtk = true;
+    settings = {
+      default_session = {
+        command = ''
+          ${pkgs.greetd.tuigreet}/bin/tuigreet \
+            --time \
+            --asterisks \
+            --remember \
+            --theme "border=blue;text=cyan;prompt=green" \
+            --greeting "Welcome to NixOS" \
+            --cmd "sway --unsupported-gpu" 
+	'';
+        user = "greeter";
+      };
+    };
   };
 }

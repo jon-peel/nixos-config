@@ -9,7 +9,7 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
-      # ./gnome.nix
+      #./gnome.nix
       ./sway.nix
       #./qtile.nix
       # ./xfce.nix
@@ -202,7 +202,7 @@ virtualisation = {
   users.users.me = {
     description = "Jonathan Peel";
     isNormalUser = true;
-    extraGroups = [ "wheel" "podman" "docker" "libvirtd" ]; 
+    extraGroups = [ "wheel" "podman" "docker" "libvirtd" "video" ];
   };
 
 home-manager = {
@@ -212,7 +212,7 @@ home-manager = {
   extraSpecialArgs = { inherit inputs; };
 };
 
-  services.onedrive.enable = true;	
+  services.onedrive.enable = true;
   programs.firefox.enable = true;
   programs.virt-manager.enable = true;
   nixpkgs.config.allowUnfree = true;
@@ -243,6 +243,7 @@ home-manager = {
     ditaa
      tex
      killall
+    pulseaudio
   ];
 
 
