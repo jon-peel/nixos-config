@@ -5,6 +5,7 @@
    # ./emacs.nix
     ./doom-emacs.nix
     ./vscode.nix
+    ./sway-home.nix
   ];
 
 
@@ -34,10 +35,12 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-    claws-mail
-    evolutionWithPlugins
-    geary
-
+    duf
+    ncdu
+    nodejs
+    nixfmt
+    graphviz
+    shellcheck
 
     thunderbird
     fd
@@ -68,7 +71,8 @@
       nixd
     gitAndTools.gh
     github-cli
-      dotnet-sdk_9
+      # dotnet-sdk_9
+      dotnet-sdk_10
       #  dotnet-sdk_8
       mono
     fsautocomplete
@@ -79,7 +83,7 @@
     curl
     gnome-software
     veracrypt
-    thefuck # that corrects errors in previous console commands.
+    # thefuck # that corrects errors in previous console commands.
       zsh-powerlevel10k
       remmina
 mudlet

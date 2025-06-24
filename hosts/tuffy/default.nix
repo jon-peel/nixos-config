@@ -9,8 +9,9 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix      
-      #./gnome.nix
-      ./qtile.nix
+      # ./gnome.nix
+      ./sway.nix
+      #./qtile.nix
       # ./xfce.nix
       # ./i3.nix
       # ./exwm.nix
@@ -22,7 +23,7 @@ in {
       # ./kde.nix
     ];
 
-
+  security.polkit.enable = true;
   
   
   # Use the systemd-boot EFI boot loader.
