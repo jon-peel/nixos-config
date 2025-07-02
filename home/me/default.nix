@@ -42,8 +42,6 @@
     nixfmt
     graphviz
     shellcheck
-
-    thunderbird
     fd
     isync
     pandoc   
@@ -281,7 +279,7 @@ AddToMenu MenuFvwmRoot "Root Menu" Title
     history.size = 10000;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "docker" "sudo" "thefuck" "dirhistory" "history" "vi-mode" ];
+      plugins = [ "git" "docker" "sudo" "dirhistory" "history" "vi-mode" ];
       theme = "agnoster";
     };  
     plugins = [
