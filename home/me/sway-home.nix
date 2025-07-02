@@ -1,12 +1,39 @@
 { config, lib, pkgs, ... }:
 
-let theme-toggle = pkgs.writeShellScriptBin "theme-toggle" (builtins.readFile ./theme-toggle.sh);
+let theme-toggle = pkgs.writeShellScriptBin "theme-toggle" ''
+    # Set up gsettings schemas
+    export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
+    ${builtins.readFile ./theme-toggle.sh}
+  '';
+
 
 in
 {
   services = {
     gnome-keyring.enable = true;
-    mako.enable = true;
+    mako = {
+      enable = true;
+      settings = {
+        #backgroundColor = "#2e3440";
+        #textColor = "#eceff4";
+        #borderColor = "#88c0d0";
+        #defaultTimeout = 5000;  # 5 seconds
+
+        ## Optional styling
+        #borderRadius = 5;
+        #borderSize = 2;
+        #padding = "10";
+        #width = 300;
+        #height = 100;
+
+        ## Position
+        #anchor = "top-right";#
+
+        ## Icons
+        #icons = true;
+        #maxIconSize = 64;
+      };
+    };
     udiskie = {
       enable = true;
       automount = true;
@@ -19,7 +46,7 @@ in
   gtk = {
     enable = true;
     theme = {
-      name = "Adwaita";
+      name = lib.mkForce "Adwaita-dark";
       package = pkgs.gnome-themes-extra;
     };
   };
@@ -80,6 +107,17 @@ in
           "Shift+Print" = "exec grim - | wl-copy";
       };
 
+      input = {
+        "type:touchpad" = {
+          natural_scroll = "enabled";
+          # Optional: other touchpad settings
+          tap = "enabled";  # Tap to click
+          dwt = "enabled";  # Disable while typing
+          scroll_method = "two_finger";  # Two finger scrolling
+          middle_emulation = "enabled";  # Three finger tap = middle click
+        };
+      };
+
       colors = {
         focused = {
           border = "#4c7899";
@@ -118,58 +156,6 @@ programs.i3status-rust = {
             format = " $icon $timestamp.datetime(f:'%a %d - %H:%M') ";
           }
         ];
-      };
-    };
-  };
-
-  systemd.user = {
-    services = {
-      theme-morning = {
-        Unit = {
-          Description = "Set light theme in the morning";
-        };
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${theme-toggle}/bin/theme-toggle light";
-        };
-      };
-
-      theme-evening = {
-        Unit = {
-          Description = "Set dark theme in the evening";
-        };
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${theme-toggle}/bin/theme-toggle dark";
-        };
-      };
-    };
-
-    timers = {
-      theme-morning = {
-        Unit = {
-          Description = "Morning theme timer";
-        };
-        Timer = {
-          OnCalendar = "*-*-* 08:00:00";
-          Persistent = true;
-        };
-        Install = {
-          WantedBy = [ "timers.target" ];
-        };
-      };
-
-      theme-evening = {
-        Unit = {
-          Description = "Evening theme timer";
-        };
-        Timer = {
-          OnCalendar = "*-*-* 17:00:00";
-          Persistent = true;
-        };
-        Install = {
-          WantedBy = [ "timers.target" ];
-        };
       };
     };
   };

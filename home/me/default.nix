@@ -5,6 +5,7 @@
    # ./emacs.nix
     ./doom-emacs.nix
     ./vscode.nix
+    ./dotnet.nix
     ./sway-home.nix
   ];
 
@@ -44,7 +45,6 @@
 
     thunderbird
     fd
-    jetbrains.rider
     isync
     pandoc   
       firefox
@@ -71,10 +71,6 @@
       nixd
     gitAndTools.gh
     github-cli
-      # dotnet-sdk_9
-      # dotnet-sdk_10
-      #  dotnet-sdk_8
-      mono
     fsautocomplete
 
       # other

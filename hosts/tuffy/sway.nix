@@ -1,7 +1,6 @@
 { pkgs, ... }:
 
 {
-  # kanshi systemd service
   systemd.user.services.kanshi = {
     description = "kanshi daemon";
     environment = {
@@ -27,8 +26,8 @@
             --remember \
             --theme "border=blue;text=cyan;prompt=green" \
             --greeting "Welcome to NixOS" \
-            --cmd "sway --unsupported-gpu" 
-	'';
+            --cmd "${pkgs.sway}/bin/sway --unsupported-gpu"
+          '';
         user = "greeter";
       };
     };
