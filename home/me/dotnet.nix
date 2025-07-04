@@ -13,9 +13,9 @@ in
 {
   home = {
     packages = with pkgs; [
-      dotnet-combined
       jetbrains.rider
+      docker
+      dotnet-combined
     ];
-    sessionVariables = { DOTNET_ROOT = "${dotnet-combined}"; };
   };
-}
+ }
